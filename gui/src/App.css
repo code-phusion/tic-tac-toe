@@ -1,0 +1,44 @@
+/* App.css */
+
+.game {
+    text-align: center;
+}
+
+.board {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 1px auto;
+}
+
+.board-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cell-container {
+    margin: 1px;
+}
+
+.cell {
+    width: 80px;
+    height: 80px;
+    font-size: 3rem !important;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.o-button {
+  color:red !important;
+}
+.x-button {
+  color:#1976d2 !important;
+}
+
+.cell:hover {
+    background-color: #f0f0f0;
+}
