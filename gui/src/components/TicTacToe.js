@@ -8,21 +8,58 @@ const TicTacToe = () => {
 
   const {gameId} = useParams();
   const [stateId, setStateId] = useState(0);
+  console.log(`stateId = ${stateId} (render)`);
+  debugger
 
-  const {data: state, refetch} = useQuery(["gameState", gameId], () => gameApi.getState(gameId, stateId), {
-    onSuccess: () => refetch(),
-    onError: () => setTimeout(() => refetch(), 1000)
+  function refetch() {
+    debugger
+    refetch1();
+  }
+
+  const {data: state, refetch: refetch1} = useQuery(["gameState", gameId], async () => {
+    debugger
+    try {
+      return await gameApi.getState(gameId, stateId);
+    } finally {
+      debugger
+    }
+  }, {
+    cacheTime: Infinity,
+    onSuccess: () => {
+      console.log(`getState.onSuccess (stateId = ${stateId})`);
+      console.log(`getState.onSuccess: setStateId(${stateId})`);
+      debugger
+      setStateId( state?.stateId || stateId);
+      refetch();
+    },
+    onError: () => {
+      debugger
+      setTimeout(() => refetch(), 1000);
+    }
   });
   const board = state?.game?.board?.board || [];
   const gameOver = state?.game?.gameOver || false;
   const draw = state?.game?.draw || false;
-  const nextState = state?.stateId || stateId;
+  // const nextState = state?.stateId || stateId;
 
-  useEffect(() => {
-    setStateId(nextState);
-  }, [nextState]);
+  // useEffect(() => {
+  //   setStateId(nextState);
+  // }, [nextState]);
 
-  const {mutate: move} = useMutation(v => gameApi.move(gameId, v.row, v.col))
+  const {mutate: move} = useMutation(async v => {
+    debugger
+    try {
+      return await gameApi.move(gameId, v.row, v.col);
+    } finally {
+      debugger
+    }
+  }, {
+    onSettled: () => {
+      console.log(`move.onSettled (stateId = ${stateId})`);
+      debugger
+      refetch();
+    }
+  })
   const handleCellClick = async (row, col) => {
     if (!gameOver) {
       move({row, col});
