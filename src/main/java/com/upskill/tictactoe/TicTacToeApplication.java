@@ -12,8 +12,6 @@ public class TicTacToeApplication {
 
 }
 
-// TODO [gui] Warning: Do not use Array index in keys (TicTacToe.js)
-
 // TODO Possibility to play with different game engines (including different CPU algorythms, self, online)
 
 // TODO [board] Restart game (and clear)
@@ -28,6 +26,11 @@ public class TicTacToeApplication {
 // TODO [board] Add possibility to choose X or 0 for player
 // TODO [board] Add history of moves with possibility to go back to any move like in chess
 
+// TODO [gui] Warning: Do not use Array index in keys (TicTacToe.js)
+
+// TODO [multiplayer] Distinguish X or 0 player
+// TODO [multiplayer] Long pooling (Awaiter) -> WebSocket
+// TODO [multiplayer] stateId -> moveCount
 // TODO [online] Add possibility to create room with game [with room_id and password]
 // TODO [online] Add possibility to join room with game [with room_id and password]
 // TODO [online] Add possibility to play with other player [probably we will need to change our API]
