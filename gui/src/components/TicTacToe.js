@@ -1,46 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography } from '@mui/material';
+import gameApi from "../api/api";
 
 const TicTacToe = () => {
   const [board, setBoard] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [draw, setDraw] = useState(false);
 
-  const fetchState = () => {
-    // Fetch the initial game state from the backend when the component mounts
-    fetch('http://localhost:9090/api/game/state')
-      .then((response) => response.json())
-      .then((data) => {
-        setBoard(data.board.board);
-        setGameOver(data.gameOver)
-        setDraw(data.draw)
-      })
-      .catch((error) => {
-        console.error('Error fetching game state:', error);
-      });
+  const fetchState = async () => {
+    const state = await gameApi.getState();
+    setBoard(state.board.board);
+    setGameOver(state.gameOver);
+    setDraw(state.draw);
   }
 
   useEffect(() => {
     fetchState();
   }, []);
 
-  const handleCellClick = (row, col) => {
-    if (gameOver) {
-      return;
+  const handleCellClick = async (row, col) => {
+    if (!gameOver) {
+      await gameApi.move(row, col);
+      fetchState();
     }
-
-    // Send the move to the backend API
-    fetch(`http://localhost:9090/api/game/move?row=${row}&col=${col}`, {
-      method: 'POST',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        fetchState()
-      })
-      .catch((error) => {
-        console.error('Error making a move:', error);
-      });
   };
 
   const renderCell = (rowIndex, colIndex, value) => {
@@ -67,7 +50,6 @@ const TicTacToe = () => {
   const navigate = useNavigate();
 
   const handleRestart = () => {
-    // Navigate back to the first screen (assuming it has the path "/")
     navigate('/');
   };
 
@@ -102,4 +84,3 @@ const TicTacToe = () => {
 };
 
 export default TicTacToe;
-
