@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Typography } from '@mui/material';
+import React from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Button, Typography} from '@mui/material';
 import gameApi from "../api/api";
+import {useQuery} from "@tanstack/react-query";
 
 const TicTacToe = () => {
-  const [board, setBoard] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
-  const [draw, setDraw] = useState(false);
 
-  const fetchState = async () => {
-    const state = await gameApi.getState();
-    setBoard(state.board.board);
-    setGameOver(state.gameOver);
-    setDraw(state.draw);
-  }
-
-  useEffect(() => {
-    fetchState();
-  }, []);
+  const {data: state, refetch: fetchState} = useQuery(["gameState"], gameApi.getState, {
+    refetchInterval: 1000
+  });
+  const board = state?.board?.board || [];
+  const gameOver = state?.gameOver || false;
+  const draw = state?.draw || false;
 
   const handleCellClick = async (row, col) => {
     if (!gameOver) {

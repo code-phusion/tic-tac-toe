@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Container, TextField, Typography } from '@mui/material';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Button, Container, TextField, Typography} from '@mui/material';
 import gameApi from "../api/api";
 
 function StartScreen() {
-  const [size, setSize] = useState('');
+  const [size, setSize] = useState('10');
   const navigate = useNavigate();
 
   const startGame = async () => {
