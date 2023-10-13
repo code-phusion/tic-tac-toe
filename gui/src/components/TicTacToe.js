@@ -1,22 +1,24 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Button, Typography} from '@mui/material';
 import gameApi from "../api/api";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useMutation} from "@tanstack/react-query";
 
 const TicTacToe = () => {
 
-  const {data: state, refetch: fetchState} = useQuery(["gameState"], gameApi.getState, {
+  const {gameId} = useParams();
+
+  const {data: state, refetch: fetchState} = useQuery(["gameState", gameId], () => gameApi.getState(gameId), {
     refetchInterval: 1000
   });
   const board = state?.board?.board || [];
   const gameOver = state?.gameOver || false;
   const draw = state?.draw || false;
 
+  const {mutate: move} = useMutation(v => gameApi.move(gameId, v.row, v.col), {onSettled: fetchState})
   const handleCellClick = async (row, col) => {
     if (!gameOver) {
-      await gameApi.move(row, col);
-      fetchState();
+      move({row, col});
     }
   };
 

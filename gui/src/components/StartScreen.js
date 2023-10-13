@@ -8,8 +8,9 @@ function StartScreen() {
   const navigate = useNavigate();
 
   const startGame = async () => {
-    await gameApi.newGame(size);
-    navigate('game');
+    const resposne = await gameApi.newGame(size);
+    const gameId = resposne?.gameId;
+    navigate(`game/${gameId}`);
   };
 
   return (

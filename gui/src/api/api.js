@@ -6,13 +6,13 @@ const gameApi = {
     return response?.data;
   },
 
-  getState: async () => {
-    const response = await apiClient.get(`/game/state`);
+  getState: async (gameId) => {
+    const response = await apiClient.get(`/game/${gameId}/state`);
     return response?.data;
   },
 
-  move: async (row, col) => {
-    const response = await apiClient.post(`/game/move?row=${row}&col=${col}`);
+  move: async (gameId, row, col) => {
+    const response = await apiClient.post(`/game/${gameId}/move?row=${row}&col=${col}`);
     return response?.data;
   }
 }
