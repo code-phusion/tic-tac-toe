@@ -12,7 +12,7 @@ public class TicTacToeApplication {
 
 }
 
-// TODO [igor] Multiplayer
+// TODO [gui] Warning: Do not use Array index in keys (TicTacToe.js)
 
 // TODO Possibility to play with different game engines (including different CPU algorythms, self, online)
 
