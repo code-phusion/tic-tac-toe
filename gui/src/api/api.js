@@ -6,8 +6,8 @@ const gameApi = {
     return response?.data;
   },
 
-  getState: async (gameId) => {
-    const response = await apiClient.get(`/game/${gameId}/state`);
+  getState: async (gameId, stateId) => {
+    const response = await apiClient.get(`/game/${gameId}/state/${stateId}`);
     return response?.data;
   },
 

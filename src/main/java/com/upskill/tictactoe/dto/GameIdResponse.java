@@ -1,4 +1,4 @@
-package com.upskill.tictactoe.model;
+package com.upskill.tictactoe.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
