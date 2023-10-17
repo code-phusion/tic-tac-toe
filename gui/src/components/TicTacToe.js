@@ -1,46 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Typography } from '@mui/material';
+import React from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {Button, Typography} from '@mui/material';
+import gameApi from "../api/api";
+import {useQuery, useMutation} from "@tanstack/react-query";
 
 const TicTacToe = () => {
-  const [board, setBoard] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
-  const [draw, setDraw] = useState(false);
 
-  const fetchState = () => {
-    // Fetch the initial game state from the backend when the component mounts
-    fetch('http://localhost:9090/api/game/state')
-      .then((response) => response.json())
-      .then((data) => {
-        setBoard(data.board.board);
-        setGameOver(data.gameOver)
-        setDraw(data.draw)
-      })
-      .catch((error) => {
-        console.error('Error fetching game state:', error);
-      });
-  }
+  const {gameId} = useParams();
 
-  useEffect(() => {
-    fetchState();
-  }, []);
+  const {data: state, refetch: fetchState} = useQuery(["gameState", gameId], () => gameApi.getState(gameId), {
+    refetchInterval: 1000
+  });
+  const board = state?.board?.board || [];
+  const gameOver = state?.gameOver || false;
+  const draw = state?.draw || false;
 
-  const handleCellClick = (row, col) => {
-    if (gameOver) {
-      return;
+  const {mutate: move} = useMutation(v => gameApi.move(gameId, v.row, v.col), {onSettled: fetchState})
+  const handleCellClick = async (row, col) => {
+    if (!gameOver) {
+      move({row, col});
     }
-
-    // Send the move to the backend API
-    fetch(`http://localhost:9090/api/game/move?row=${row}&col=${col}`, {
-      method: 'POST',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        fetchState()
-      })
-      .catch((error) => {
-        console.error('Error making a move:', error);
-      });
   };
 
   const renderCell = (rowIndex, colIndex, value) => {
@@ -67,7 +46,6 @@ const TicTacToe = () => {
   const navigate = useNavigate();
 
   const handleRestart = () => {
-    // Navigate back to the first screen (assuming it has the path "/")
     navigate('/');
   };
 
@@ -102,4 +80,3 @@ const TicTacToe = () => {
 };
 
 export default TicTacToe;
-

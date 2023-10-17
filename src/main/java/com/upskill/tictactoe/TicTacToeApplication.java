@@ -12,9 +12,9 @@ public class TicTacToeApplication {
 
 }
 
-// TODO [igor] Multigame
+// TODO [gui] Warning: Do not use Array index in keys (TicTacToe.js)
 
-// TODO Possibility to play with the game
+// TODO Possibility to play with different game engines (including different CPU algorythms, self, online)
 
 // TODO [board] Restart game (and clear)
 // TODO [board] Display winner (Х or 0);
@@ -28,22 +28,15 @@ public class TicTacToeApplication {
 // TODO [board] Add possibility to choose X or 0 for player
 // TODO [board] Add history of moves with possibility to go back to any move like in chess
 
-
-// TODO [online]
-
 // TODO [online] Add possibility to create room with game [with room_id and password]
 // TODO [online] Add possibility to join room with game [with room_id and password]
 // TODO [online] Add possibility to play with other player [probably we will need to change our API]
 // TODO [online] Add list of available rooms
 
-// TODO [AI]
-
 // TODO [AI] Create AI using algorithms like: MinMax or AlphaBeta [we can discuss what to use]
 // TODO [AI] Add possibility to play with AI
 // TODO [AI] Add possibility to choose AI level
 
-
-// FUTURE-IDEAS:
 // TODO [FUTURE-IDEAS] Implement AI move history (for debugging and analysis)
 // TODO [FUTURE-IDEAS] Implement AI learning capabilities
 // TODO [FUTURE-IDEAS] Optimize AI algorithms for better performance
