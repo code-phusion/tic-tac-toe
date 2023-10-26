@@ -10,7 +10,4 @@ import lombok.NoArgsConstructor;
 public class Move {
   private int row;
   private int col;
-
-  public Move(int score) {
-  }
 }
