@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TicTacToeBoardModel {
   private char[][] board;
+  private int size;
 
   public TicTacToeBoardModel(int size) {
     this.board = new char[size][size];
@@ -17,6 +18,14 @@ public class TicTacToeBoardModel {
         board[i][j] = ' ';
       }
     }
+  }
+
+  public boolean isEmpty(int row, int col) {
+    return board[row][col] == ' ';
+  }
+
+  public void undoMove(int row, int col) {
+    board[row][col] = ' ';
   }
 
   public boolean makeMove(int row, int col, char playerSymbol) {
@@ -41,6 +50,54 @@ public class TicTacToeBoardModel {
     }
 
     if (checkReverseDiagonalWin(row, col, playerSymbol)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public char getWinner() {
+    for (int i = 0; i < board.length; i++) {
+      if (checkHorizontalWin(i, 0, board[i][0])) {
+        return board[i][0];
+      }
+    }
+
+    for (int i = 0; i < board[0].length; i++) {
+      if (checkVerticalWin(0, i, board[0][i])) {
+        return board[0][i];
+      }
+    }
+
+    if (checkDiagonalWin(0, 0, board[0][0])) {
+      return board[0][0];
+    }
+
+    if (checkReverseDiagonalWin(0, board[0].length - 1, board[0][board[0].length - 1])) {
+      return board[0][board[0].length - 1];
+    }
+
+    return ' ';
+  }
+
+  public boolean isGameOver() {
+    for (int i = 0; i < board.length; i++) {
+      if (checkHorizontalWin(i, 0, board[i][0])) {
+        return true;
+      }
+    }
+
+    for (int i = 0; i < board[0].length; i++) {
+      if (checkVerticalWin(0, i, board[0][i])) {
+        return true;
+      }
+    }
+
+    if (checkDiagonalWin(0, 0, board[0][0])) {
+      return true;
+    }
+
+    if (checkReverseDiagonalWin(0, board[0].length - 1, board[0][board[0].length - 1])) {
       return true;
     }
 

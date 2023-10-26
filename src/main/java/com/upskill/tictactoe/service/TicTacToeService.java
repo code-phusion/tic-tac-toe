@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.upskill.tictactoe.dto.GameIdResponse;
 import com.upskill.tictactoe.dto.GameStateResponse;
+import com.upskill.tictactoe.model.Move;
 import com.upskill.tictactoe.model.GameSessionData;
 import com.upskill.tictactoe.model.MessageModel;
+import com.upskill.tictactoe.model.TicTacToeBoardModel;
 import com.upskill.tictactoe.model.TicTacToeGameModel;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TicTacToeService {
   private final GameSessionService gameSessionService;
+  private final MiniMaxAI miniMaxAI;
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
@@ -47,8 +50,8 @@ public class TicTacToeService {
     }
   }
 
-  public ResponseEntity<GameIdResponse> startNewGame(int size) {
-    final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size));
+  public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI) {
+    final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI));
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
   }
 
@@ -62,8 +65,46 @@ public class TicTacToeService {
   public ResponseEntity<MessageModel> restartCurrentGame(final String gameId) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
     final TicTacToeGameModel ticTacToeGameModel = gameSessionData.getGameModel();
-    gameSessionService.updateGame(gameId, new TicTacToeGameModel(ticTacToeGameModel.getBoard().getBoard().length));
+    gameSessionService.updateGame(gameId, new TicTacToeGameModel(ticTacToeGameModel.getBoard().getBoard().length, ticTacToeGameModel.isAgainstAI()));
     gameSessionData.getAwaiter().notifyUpdated();
     return ResponseEntity.ok(new MessageModel("Game restarted."));
+  }
+
+  public ResponseEntity<MessageModel> makeAIMove(final String gameId) {
+    final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
+    TicTacToeGameModel gameModel = gameSessionData.getGameModel();
+
+    if (!gameModel.isGameOver() && !gameModel.isDraw() && gameModel.getCurrentPlayerModel().getSymbol() == 'X') {
+      TicTacToeBoardModel boardModel = gameModel.getBoard();
+
+      // AI's turn, call the MiniMax AI to make the move
+      Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
+      if (aiMove == null) {
+        return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
+      }
+
+      int row = aiMove.getRow();
+      int col = aiMove.getCol();
+
+      if (gameModel.getBoard().makeMove(row, col, 'O')) {
+        if (gameModel.getBoard().isGameOver(row, col, 'O')) {
+          gameModel.setGameOver(true);
+          gameSessionData.getAwaiter().notifyUpdated();
+          return ResponseEntity.ok(new MessageModel("O wins!"));
+        } else if (gameModel.getBoard().isDraw()) {
+          gameModel.setDraw(true);
+          gameSessionData.getAwaiter().notifyUpdated();
+          return ResponseEntity.ok(new MessageModel("It's a draw!"));
+        } else {
+          gameModel.setCurrentPlayerModel(gameModel.getPlayerModelX());
+          gameSessionData.getAwaiter().notifyUpdated();
+          return ResponseEntity.ok(new MessageModel("AI move successful."));
+        }
+      } else {
+        return ResponseEntity.badRequest().body(new MessageModel("AI made an invalid move."));
+      }
+    } else {
+      return ResponseEntity.badRequest().body(new MessageModel("AI cannot make a move at this time."));
+    }
   }
 }

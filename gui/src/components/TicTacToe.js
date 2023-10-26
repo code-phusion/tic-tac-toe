@@ -1,54 +1,79 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {Button, Typography} from '@mui/material';
-import gameApi from "../api/api";
-import {useQuery, useMutation} from "@tanstack/react-query";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  Button,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+import gameApi from '../api/api';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 const TicTacToe = () => {
+  const { gameId } = useParams();
+  const navigate = useNavigate();
+  const [winner, setWinner] = useState(null);
 
-  const {gameId} = useParams();
+  const { data: gameState, refetch } = useQuery(
+    ['gameState', gameId],
+    async () => gameApi.getState(gameId, gameState?.stateId || 0),
+    {
+      onSuccess: () => setTimeout(() => refetch(), 0),
+      onError: () => setTimeout(() => refetch(), 1000),
+    }
+  );
 
-  const {data: state, refetch} = useQuery(["gameState", gameId], async () => gameApi.getState(gameId, state?.stateId || 0), {
-    onSuccess: () => setTimeout(() => refetch(), 0),
-    onError: () => setTimeout(() => refetch(), 1000)
-  })
-  const board = state?.game?.board?.board || [];
-  const gameOver = state?.game?.gameOver || false;
-  const draw = state?.game?.draw || false;
+  const board = gameState?.game?.board?.board || [];
+  const gameOver = gameState?.game?.gameOver || false;
+  const draw = gameState?.game?.draw || false;
 
-  const {mutate: move} = useMutation(async v => await gameApi.move(gameId, v.row, v.col))
+  const { mutate: makeMove } = useMutation(async (params) =>
+    await gameApi.move(gameId, params.row, params.col)
+  );
+
+  const { mutate: makeAIMove } = useMutation(async () =>
+    await gameApi.makeAIMove(gameId)
+  );
+
   const handleCellClick = async (row, col) => {
     if (!gameOver) {
-      move({row, col});
+      await makeMove({ row, col });
+      if (gameState?.game?.againstAI) {
+        await makeAIMove();
+      }
     }
   };
 
   const renderCell = (rowIndex, colIndex, value) => {
-    let buttonClass;
-    if (value === 'X') {
-      buttonClass = "x-button cell";
-    } else if (value === '0') {
-      buttonClass = "o-button cell";
-    } else {
-      buttonClass = "cell";
-    }
+    const buttonClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';
+
     return (
       <Button
         variant="outlined"
-        className={buttonClass}
+        className={`cell ${buttonClass}`}
         onClick={() => handleCellClick(rowIndex, colIndex)}
         key={colIndex}
       >
         {value}
       </Button>
-    )
-  }
-
-  const navigate = useNavigate();
+    );
+  };
 
   const handleRestart = () => {
     navigate('/');
   };
+
+  useEffect(() => {
+    if (gameOver) {
+      if (gameState?.game?.gameOver) {
+        setWinner(`${gameState?.game?.currentPlayerModel?.symbol} wins!`);
+      } else if (draw) {
+        setWinner("It's a draw!");
+      }
+    }
+  }, [gameOver, gameState, draw]);
 
   return (
     <div className="game">
@@ -56,10 +81,10 @@ const TicTacToe = () => {
         Tic Tac Toe
       </Typography>
       <Typography variant="h6" gutterBottom>
-        Game Over : {gameOver ? 'true' : 'false'}
+        Game Over: {gameOver ? 'true' : 'false'}
       </Typography>
       <Typography variant="h6" gutterBottom>
-        Draw : {draw ? 'true' : 'false'}
+        Draw: {draw ? 'true' : 'false'}
       </Typography>
 
       <div className="board">
@@ -76,6 +101,16 @@ const TicTacToe = () => {
       <Button variant="contained" color="primary" onClick={handleRestart}>
         Restart
       </Button>
+
+      <Dialog open={winner !== null} onClose={() => setWinner(null)}>
+        <DialogTitle>Game Over</DialogTitle>
+        <DialogContent>
+          <Typography>{winner}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setWinner(null)}>OK</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
