@@ -12,7 +12,12 @@ public class TicTacToeBoardModel {
   private int size;
 
   public TicTacToeBoardModel(int size) {
-    this.board = new char[size][size];
+    this.size = size;
+    board = new char[size][size];
+    initializeBoard();
+  }
+
+  private void initializeBoard() {
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
         board[i][j] = ' ';

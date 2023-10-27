@@ -37,21 +37,25 @@ const TicTacToe = () => {
     await gameApi.makeAIMove(gameId)
   );
 
- const handleCellClick = async (row, col) => {
-   if (!gameOver) {
-     const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
+const handleCellClick = async (row, col) => {
+  if (!gameOver) {
+    const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
 
-     if (!gameState?.game?.againstAI || (currentPlayerSymbol === 'X')) {
-       await makeMove({ row, col });
+    if (!gameState?.game?.againstAI || (currentPlayerSymbol === 'X')) {
+      await makeMove({ row, col });
 
-       if (gameState?.game?.againstAI && (currentPlayerSymbol === 'X') && !gameOver) {
-         await makeAIMove();
-       }
-     } else {
-       console.log("It's not your turn.");
-     }
-   }
- };
+      if (gameState?.game?.againstAI && (currentPlayerSymbol === 'X') && !gameOver) {
+        // Introduce a delay before the AI makes a move to avoid race condition. That's not ok.
+        // We will probably fix it with more elegant solution in the future.
+        setTimeout(async () => {
+          await makeAIMove();
+        }, 1000);
+      }
+    } else {
+      console.log("It's not your turn.");
+    }
+  }
+};
 
 
   const renderCell = (rowIndex, colIndex, value) => {

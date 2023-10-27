@@ -5,74 +5,64 @@ import org.springframework.stereotype.Service;
 import com.upskill.tictactoe.model.Move;
 import com.upskill.tictactoe.model.TicTacToeBoardModel;
 
+/*
+* Pretty Stupid AI Algo ;)
+* */
 @Service
 public class MiniMaxAI {
   public Move calculateMove(TicTacToeBoardModel board, char aiSymbol) {
-    int[] bestMove = minimax(board, aiSymbol, aiSymbol, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    return new Move(bestMove[0], bestMove[1]);
-  }
+    int bestScore = Integer.MIN_VALUE;
+    Move bestMove = null;
 
-  private int[] minimax(TicTacToeBoardModel board, char playerSymbol, char aiSymbol, int alpha, int beta) {
-    // Base case: Check if the game is over or depth limit reached
-    if (board.isGameOver() || board.isDraw()) {
-      int score = evaluate(board, aiSymbol);
-      return new int[] { -1, -1, score };
-    }
-
-    int[] bestMove = new int[] { -1, -1 };
-    int bestScore = (playerSymbol == aiSymbol) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-
-    // Iterate through empty cells
     for (int row = 0; row < board.getSize(); row++) {
       for (int col = 0; col < board.getSize(); col++) {
         if (board.isEmpty(row, col)) {
-          // Simulate the move
-          board.makeMove(row, col, playerSymbol);
+          board.makeMove(row, col, aiSymbol); // Make the move
+          int score = minimax(board, 0, false, aiSymbol);
+          board.undoMove(row, col); // Undo the move
 
-          // Recursively call minimax for the opponent
-          int[] result = minimax(board, (playerSymbol == 'X') ? 'O' : 'X', aiSymbol, alpha, beta);
-
-          // Undo the move
-          board.undoMove(row, col);
-
-          int score = result[2];
-
-          // Update best move and score based on player's turn
-          if (playerSymbol == aiSymbol) {
-            if (score > bestScore) {
-              bestScore = score;
-              bestMove[0] = row;
-              bestMove[1] = col;
-              alpha = Math.max(alpha, bestScore);
-            }
-          } else {
-            if (score < bestScore) {
-              bestScore = score;
-              bestMove[0] = row;
-              bestMove[1] = col;
-              beta = Math.min(beta, bestScore);
-            }
-          }
-
-          // Alpha-beta pruning
-          if (beta <= alpha) {
-            break;
+          if (score > bestScore) {
+            bestScore = score;
+            bestMove = new Move(row, col);
           }
         }
       }
     }
 
-    bestMove[2] = bestScore;
     return bestMove;
   }
 
-  private int evaluate(TicTacToeBoardModel board, char aiSymbol) {
-    // Simple evaluation function: Assign scores based on winning, losing, or drawing states.
-    if (board.getWinner() == aiSymbol) {
-      return 10;
-    } else if (board.getWinner() != ' ') {
-      return -10;
+  private int minimax(TicTacToeBoardModel board, int depth, boolean isMaximizing, char aiSymbol) {
+    if (board.isGameOver()) {
+      char winner = board.getWinner();
+      if (winner == aiSymbol) {
+        return 1;
+      } else if (winner == ' ') {
+        return 0; // It's a draw
+      } else {
+        return -1;
+      }
     }
-    return 0; // A draw or game still in progress
+
+    int bestScore = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+
+    for (int row = 0; row < board.getSize(); row++) {
+      for (int col = 0; col < board.getSize(); col++) {
+        if (board.isEmpty(row, col)) {
+          char playerSymbol = isMaximizing ? 'O' : 'X';
+          board.makeMove(row, col, playerSymbol);
+          int score = minimax(board, depth + 1, !isMaximizing, aiSymbol);
+          board.undoMove(row, col);
+
+          if (isMaximizing) {
+            bestScore = Math.max(bestScore, score);
+          } else {
+            bestScore = Math.min(bestScore, score);
+          }
+        }
+      }
+    }
+
+    return bestScore;
   }
 }

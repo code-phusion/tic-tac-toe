@@ -83,7 +83,7 @@ public class TicTacToeService {
     }
 
     TicTacToeBoardModel boardModel = gameModel.getBoard();
-    Move aiMove = miniMaxAI.calculateMove(boardModel, '0');
+    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
 
     if (aiMove == null) {
       return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
@@ -92,11 +92,11 @@ public class TicTacToeService {
     int row = aiMove.getRow();
     int col = aiMove.getCol();
 
-    if (boardModel.makeMove(row, col, '0')) {
-      if (boardModel.isGameOver(row, col, '0')) {
+    if (boardModel.makeMove(row, col, 'O')) {
+      if (boardModel.isGameOver(row, col, 'O')) {
         gameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("0 wins!"));
+        return ResponseEntity.ok(new MessageModel("O wins!"));
       } else if (boardModel.isDraw()) {
         gameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();

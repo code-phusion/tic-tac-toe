@@ -9,18 +9,26 @@ function StartScreen() {
 
   const startGame = async (againstAI) => {
     try {
-      // Create a new game with the selected size and againstAI flag
-      const response = await gameApi.newGame(size, againstAI);
-      const gameId = response?.gameId;
+      const fieldSize = parseInt(size, 10);
+      if (fieldSize < 5) {
+        alert("Please enter size of 5 or greater.");
+        return;
+      }
 
-      // Navigate to the game with the generated gameId
+      if (fieldSize > 50) {
+        alert("Please enter size of 50 or less.");
+        return;
+      }
+
+      const response = await gameApi.newGame(fieldSize, againstAI);
+      const gameId = response?.gameId;
       navigate(`game/${gameId}`);
     } catch (error) {
       console.error('An error occurred while starting the game:', error);
     }
   };
 
-  const buttonStyle = { margin: '10px' }; // Add margin to the buttons
+  const buttonStyle = { margin: '10px' };
 
   return (
     <Container maxWidth="sm" style={{ textAlign: 'center', paddingTop: '100px' }}>
@@ -29,8 +37,6 @@ function StartScreen() {
       </Typography>
       <TextField
         type="number"
-        min={1}
-        max={100}
         variant="outlined"
         label="Enter Field Size"
         fullWidth
@@ -41,16 +47,16 @@ function StartScreen() {
       <Button
         variant="contained"
         color="primary"
-        onClick={() => startGame(true)} // Start Against AI
-        style={buttonStyle} // Apply margin to the button
+        onClick={() => startGame(true)}
+        style={buttonStyle}
       >
         Start Against AI
       </Button>
       <Button
         variant="contained"
         color="secondary"
-        onClick={() => startGame(false)} // Start Against Human
-        style={buttonStyle} // Apply margin to the button
+        onClick={() => startGame(false)}
+        style={buttonStyle}
       >
         Start Against Human
       </Button>
