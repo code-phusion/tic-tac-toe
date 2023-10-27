@@ -82,14 +82,8 @@ public class TicTacToeService {
       return ResponseEntity.badRequest().body(new MessageModel("It's a draw!"));
     }
 
-    char currentPlayerSymbol = gameModel.getCurrentPlayerModel().getSymbol();
-
-    if (currentPlayerSymbol != 'O') {
-      return ResponseEntity.badRequest().body(new MessageModel("It's not the AI's turn."));
-    }
-
     TicTacToeBoardModel boardModel = gameModel.getBoard();
-    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
+    Move aiMove = miniMaxAI.calculateMove(boardModel, '0');
 
     if (aiMove == null) {
       return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
@@ -98,11 +92,11 @@ public class TicTacToeService {
     int row = aiMove.getRow();
     int col = aiMove.getCol();
 
-    if (boardModel.makeMove(row, col, 'O')) {
-      if (boardModel.isGameOver(row, col, 'O')) {
+    if (boardModel.makeMove(row, col, '0')) {
+      if (boardModel.isGameOver(row, col, '0')) {
         gameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("O wins!"));
+        return ResponseEntity.ok(new MessageModel("0 wins!"));
       } else if (boardModel.isDraw()) {
         gameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();

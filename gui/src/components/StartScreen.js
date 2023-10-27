@@ -13,13 +13,14 @@ function StartScreen() {
       const response = await gameApi.newGame(size, againstAI);
       const gameId = response?.gameId;
 
-
       // Navigate to the game with the generated gameId
       navigate(`game/${gameId}`);
     } catch (error) {
       console.error('An error occurred while starting the game:', error);
     }
   };
+
+  const buttonStyle = { margin: '10px' }; // Add margin to the buttons
 
   return (
     <Container maxWidth="sm" style={{ textAlign: 'center', paddingTop: '100px' }}>
@@ -41,6 +42,7 @@ function StartScreen() {
         variant="contained"
         color="primary"
         onClick={() => startGame(true)} // Start Against AI
+        style={buttonStyle} // Apply margin to the button
       >
         Start Against AI
       </Button>
@@ -48,6 +50,7 @@ function StartScreen() {
         variant="contained"
         color="secondary"
         onClick={() => startGame(false)} // Start Against Human
+        style={buttonStyle} // Apply margin to the button
       >
         Start Against Human
       </Button>
