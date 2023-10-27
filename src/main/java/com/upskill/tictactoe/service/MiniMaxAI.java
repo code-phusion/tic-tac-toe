@@ -11,15 +11,14 @@ public class MiniMaxAI {
     int bestScore = Integer.MIN_VALUE;
     Move bestMove = null;
 
-    // Iterate through all empty cells and calculate the score for each move
     for (int row = 0; row < board.getSize(); row++) {
       for (int col = 0; col < board.getSize(); col++) {
         if (board.isEmpty(row, col)) {
-          board.makeMove(row, col, aiSymbol); // Make the move
-          int score = minimax(board, 0, false, aiSymbol);
-          board.undoMove(row, col); // Undo the move
+          board.makeMove(row, col, aiSymbol);
+          int score = minimax(board, 0, false, aiSymbol, aiSymbol == 'X' ? 'O' : 'X');
+          board.undoMove(row, col);
 
-          if (score > bestScore || bestMove == null) {
+          if (score > bestScore) {
             bestScore = score;
             bestMove = new Move(row, col);
           }
@@ -30,37 +29,44 @@ public class MiniMaxAI {
     return bestMove;
   }
 
-  private int minimax(TicTacToeBoardModel board, int depth, boolean isMaximizing, char aiSymbol) {
+  private int minimax(TicTacToeBoardModel board, int depth, boolean isMaximizing, char maximizingSymbol, char minimizingSymbol) {
     if (board.isGameOver()) {
       char winner = board.getWinner();
-      if (winner == aiSymbol) {
+      if (winner == maximizingSymbol) {
         return 1;
-      } else if (winner == ' ') {
-        return 0; // It's a draw
-      } else {
+      } else if (winner == minimizingSymbol) {
         return -1;
+      } else {
+        return 0; // It's a draw
       }
     }
 
-    int bestScore = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-
-    for (int row = 0; row < board.getSize(); row++) {
-      for (int col = 0; col < board.getSize(); col++) {
-        if (board.isEmpty(row, col)) {
-          char playerSymbol = isMaximizing ? aiSymbol : (aiSymbol == 'X' ? 'O' : 'X');
-          board.makeMove(row, col, playerSymbol);
-          int score = minimax(board, depth + 1, !isMaximizing, aiSymbol);
-          board.undoMove(row, col);
-
-          if (isMaximizing) {
-            bestScore = Math.max(bestScore, score);
-          } else {
-            bestScore = Math.min(bestScore, score);
+    if (isMaximizing) {
+      int bestScore = Integer.MIN_VALUE;
+      for (int row = 0; row < board.getSize(); row++) {
+        for (int col = 0; col < board.getSize(); col++) {
+          if (board.isEmpty(row, col)) {
+            board.makeMove(row, col, maximizingSymbol);
+            int score = minimax(board, depth + 1, false, maximizingSymbol, minimizingSymbol);
+            board.undoMove(row, col);
+            bestScore = Math.max(score, bestScore);
           }
         }
       }
+      return bestScore;
+    } else {
+      int bestScore = Integer.MAX_VALUE;
+      for (int row = 0; row < board.getSize(); row++) {
+        for (int col = 0; col < board.getSize(); col++) {
+          if (board.isEmpty(row, col)) {
+            board.makeMove(row, col, minimizingSymbol);
+            int score = minimax(board, depth + 1, true, maximizingSymbol, minimizingSymbol);
+            board.undoMove(row, col);
+            bestScore = Math.min(score, bestScore);
+          }
+        }
+      }
+      return bestScore;
     }
-
-    return bestScore;
   }
 }

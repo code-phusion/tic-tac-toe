@@ -37,14 +37,22 @@ const TicTacToe = () => {
     await gameApi.makeAIMove(gameId)
   );
 
-  const handleCellClick = async (row, col) => {
-    if (!gameOver) {
-      await makeMove({ row, col });
-      if (gameState?.game?.againstAI) {
-        await makeAIMove();
-      }
-    }
-  };
+ const handleCellClick = async (row, col) => {
+   if (!gameOver) {
+     const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
+
+     if (!gameState?.game?.againstAI || (currentPlayerSymbol === 'X')) {
+       await makeMove({ row, col });
+
+       if (gameState?.game?.againstAI && (currentPlayerSymbol === 'X') && !gameOver) {
+         await makeAIMove();
+       }
+     } else {
+       console.log("It's not your turn.");
+     }
+   }
+ };
+
 
   const renderCell = (rowIndex, colIndex, value) => {
     const buttonClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';

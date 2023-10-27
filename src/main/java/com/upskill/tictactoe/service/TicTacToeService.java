@@ -74,37 +74,46 @@ public class TicTacToeService {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
     TicTacToeGameModel gameModel = gameSessionData.getGameModel();
 
-    if (!gameModel.isGameOver() && !gameModel.isDraw() && gameModel.getCurrentPlayerModel().getSymbol() == 'X') {
-      TicTacToeBoardModel boardModel = gameModel.getBoard();
+    if (gameModel.isGameOver()) {
+      return ResponseEntity.badRequest().body(new MessageModel("Game is already over."));
+    }
 
-      // AI's turn, call the MiniMax AI to make the move
-      Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
-      if (aiMove == null) {
-        return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
-      }
+    if (gameModel.isDraw()) {
+      return ResponseEntity.badRequest().body(new MessageModel("It's a draw!"));
+    }
 
-      int row = aiMove.getRow();
-      int col = aiMove.getCol();
+    char currentPlayerSymbol = gameModel.getCurrentPlayerModel().getSymbol();
 
-      if (gameModel.getBoard().makeMove(row, col, 'O')) {
-        if (gameModel.getBoard().isGameOver(row, col, 'O')) {
-          gameModel.setGameOver(true);
-          gameSessionData.getAwaiter().notifyUpdated();
-          return ResponseEntity.ok(new MessageModel("O wins!"));
-        } else if (gameModel.getBoard().isDraw()) {
-          gameModel.setDraw(true);
-          gameSessionData.getAwaiter().notifyUpdated();
-          return ResponseEntity.ok(new MessageModel("It's a draw!"));
-        } else {
-          gameModel.setCurrentPlayerModel(gameModel.getPlayerModelX());
-          gameSessionData.getAwaiter().notifyUpdated();
-          return ResponseEntity.ok(new MessageModel("AI move successful."));
-        }
+    if (currentPlayerSymbol != 'O') {
+      return ResponseEntity.badRequest().body(new MessageModel("It's not the AI's turn."));
+    }
+
+    TicTacToeBoardModel boardModel = gameModel.getBoard();
+    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
+
+    if (aiMove == null) {
+      return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
+    }
+
+    int row = aiMove.getRow();
+    int col = aiMove.getCol();
+
+    if (boardModel.makeMove(row, col, 'O')) {
+      if (boardModel.isGameOver(row, col, 'O')) {
+        gameModel.setGameOver(true);
+        gameSessionData.getAwaiter().notifyUpdated();
+        return ResponseEntity.ok(new MessageModel("O wins!"));
+      } else if (boardModel.isDraw()) {
+        gameModel.setDraw(true);
+        gameSessionData.getAwaiter().notifyUpdated();
+        return ResponseEntity.ok(new MessageModel("It's a draw!"));
       } else {
-        return ResponseEntity.badRequest().body(new MessageModel("AI made an invalid move."));
+        gameModel.setCurrentPlayerModel(gameModel.getPlayerModelX());
+        gameSessionData.getAwaiter().notifyUpdated();
+        return ResponseEntity.ok(new MessageModel("AI move successful."));
       }
     } else {
-      return ResponseEntity.badRequest().body(new MessageModel("AI cannot make a move at this time."));
+      return ResponseEntity.badRequest().body(new MessageModel("AI made an invalid move."));
     }
   }
 }
