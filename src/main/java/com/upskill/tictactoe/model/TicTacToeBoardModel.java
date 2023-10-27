@@ -42,23 +42,7 @@ public class TicTacToeBoardModel {
   }
 
   public boolean isGameOver(int row, int col, char playerSymbol) {
-    if (checkHorizontalWin(row, col, playerSymbol)) {
-      return true;
-    }
-
-    if (checkVerticalWin(row, col, playerSymbol)) {
-      return true;
-    }
-
-    if (checkDiagonalWin(row, col, playerSymbol)) {
-      return true;
-    }
-
-    if (checkReverseDiagonalWin(row, col, playerSymbol)) {
-      return true;
-    }
-
-    return false;
+    return checkingAllWinConditions(row, col, playerSymbol) || isDraw();
   }
 
   public char getWinner() {
@@ -87,25 +71,12 @@ public class TicTacToeBoardModel {
 
   public boolean isGameOver() {
     for (int i = 0; i < board.length; i++) {
-      if (checkHorizontalWin(i, 0, board[i][0])) {
-        return true;
+      for (int j = 0; j < board[i].length; j++) {
+        if (isGameOver(i, j, board[i][j])) {
+          return true;
+        }
       }
     }
-
-    for (int i = 0; i < board[0].length; i++) {
-      if (checkVerticalWin(0, i, board[0][i])) {
-        return true;
-      }
-    }
-
-    if (checkDiagonalWin(0, 0, board[0][0])) {
-      return true;
-    }
-
-    if (checkReverseDiagonalWin(0, board[0].length - 1, board[0][board[0].length - 1])) {
-      return true;
-    }
-
     return false;
   }
 
@@ -165,5 +136,40 @@ public class TicTacToeBoardModel {
       count++;
     }
     return count >= 5;
+  }
+
+  public boolean checkingAllWinConditions(int row, int col, char playerSymbol) {
+    return checkHorizontalWin(row, col, playerSymbol) ||
+        checkVerticalWin(row, col, playerSymbol) ||
+        checkDiagonalWin(row, col, playerSymbol) ||
+        checkReverseDiagonalWin(row, col, playerSymbol);
+  }
+
+  public boolean isCenterOccupiedBy(char playerSymbol) {
+    return board[board.length / 2][board.length / 2] == playerSymbol;
+  }
+
+  public boolean isWinning(char playerSymbol) {
+    for (int i = 0; i < board.length; i++) {
+      if (checkHorizontalWin(i, 0, playerSymbol)) {
+        return true;
+      }
+    }
+
+    for (int i = 0; i < board[0].length; i++) {
+      if (checkVerticalWin(0, i, playerSymbol)) {
+        return true;
+      }
+    }
+
+    if (checkDiagonalWin(0, 0, playerSymbol)) {
+      return true;
+    }
+
+    if (checkReverseDiagonalWin(0, board[0].length - 1, playerSymbol)) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -10,16 +10,22 @@ import com.upskill.tictactoe.model.TicTacToeBoardModel;
 * */
 @Service
 public class MiniMaxAI {
-  public Move calculateMove(TicTacToeBoardModel board, char aiSymbol) {
+  private char aiSymbol;
+  private char opponentSymbol;
+
+  public Move calculateMove(TicTacToeBoardModel board, char aiSymbol, int depth) {
+    this.aiSymbol = aiSymbol;
+    this.opponentSymbol = (aiSymbol == 'X') ? 'O' : 'X';
+
     int bestScore = Integer.MIN_VALUE;
     Move bestMove = null;
 
     for (int row = 0; row < board.getSize(); row++) {
       for (int col = 0; col < board.getSize(); col++) {
         if (board.isEmpty(row, col)) {
-          board.makeMove(row, col, aiSymbol); // Make the move
-          int score = minimax(board, 0, false, aiSymbol);
-          board.undoMove(row, col); // Undo the move
+          board.makeMove(row, col, aiSymbol);
+          int score = minimax(board, depth - 1, false, aiSymbol, Integer.MIN_VALUE, Integer.MAX_VALUE);
+          board.undoMove(row, col);
 
           if (score > bestScore) {
             bestScore = score;
@@ -32,16 +38,9 @@ public class MiniMaxAI {
     return bestMove;
   }
 
-  private int minimax(TicTacToeBoardModel board, int depth, boolean isMaximizing, char aiSymbol) {
-    if (board.isGameOver()) {
-      char winner = board.getWinner();
-      if (winner == aiSymbol) {
-        return 1;
-      } else if (winner == ' ') {
-        return 0; // It's a draw
-      } else {
-        return -1;
-      }
+  private int minimax(TicTacToeBoardModel board, int depth, boolean isMaximizing, char currentPlayer, int alpha, int beta) {
+    if (board.isGameOver() || depth == 0) {
+      return evaluate(board, aiSymbol);
     }
 
     int bestScore = isMaximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
@@ -49,20 +48,39 @@ public class MiniMaxAI {
     for (int row = 0; row < board.getSize(); row++) {
       for (int col = 0; col < board.getSize(); col++) {
         if (board.isEmpty(row, col)) {
-          char playerSymbol = isMaximizing ? 'O' : 'X';
+          char playerSymbol = (currentPlayer == aiSymbol) ? aiSymbol : opponentSymbol;
           board.makeMove(row, col, playerSymbol);
-          int score = minimax(board, depth + 1, !isMaximizing, aiSymbol);
+          int score = minimax(board, depth - 1, !isMaximizing, playerSymbol, alpha, beta);
           board.undoMove(row, col);
 
           if (isMaximizing) {
             bestScore = Math.max(bestScore, score);
+            alpha = Math.max(alpha, score);
           } else {
             bestScore = Math.min(bestScore, score);
+            beta = Math.min(beta, score);
+          }
+
+          if (beta <= alpha) {
+            break;
           }
         }
       }
     }
 
     return bestScore;
+  }
+
+  private int evaluate(TicTacToeBoardModel board, char playerSymbol) {
+    if (board.isWinning(playerSymbol)) {
+      return 10;
+    } else if (board.isWinning(opponentSymbol)) {
+      return -10;
+    } else if (board.isCenterOccupiedBy(playerSymbol)) {
+      return 5;
+    } else if (board.isCenterOccupiedBy(opponentSymbol)) {
+      return -5;
+    }
+    return 0;
   }
 }

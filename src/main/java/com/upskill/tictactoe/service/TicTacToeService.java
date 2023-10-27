@@ -83,7 +83,7 @@ public class TicTacToeService {
     }
 
     TicTacToeBoardModel boardModel = gameModel.getBoard();
-    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
+    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O', 9);
 
     if (aiMove == null) {
       return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
