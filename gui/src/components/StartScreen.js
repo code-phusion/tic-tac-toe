@@ -14,7 +14,7 @@ function StartScreen() {
         alert("Sorry. AI for now only supports 3x3 board.");
         return;
       }
-      if (fieldSize < 3) {
+      if (fieldSize < 5) {
         alert("Please enter size of 5 or greater.");
         return;
       }
