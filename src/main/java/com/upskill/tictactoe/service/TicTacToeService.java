@@ -52,6 +52,9 @@ public class TicTacToeService {
   }
 
   public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI) {
+    if (againstAI && size != 3) {
+      return ResponseEntity.badRequest().body(new GameIdResponse("Sorry. AI for now only supports 3x3 board."));
+    }
     final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI));
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
   }
