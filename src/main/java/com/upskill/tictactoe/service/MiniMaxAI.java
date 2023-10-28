@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import com.upskill.tictactoe.model.Move;
 import com.upskill.tictactoe.model.TicTacToeBoardModel;
 
+/*
+* Minimax algorithm for Tic Tac Toe
+* For now only supports 3x3 boars. Will fix it in the future. Probably with other algo.
+* */
 @Service
 public class MiniMaxAI {
   public Move calculateMove(TicTacToeBoardModel board, char aiSymbol) {
