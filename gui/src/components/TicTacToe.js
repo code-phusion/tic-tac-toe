@@ -78,9 +78,9 @@ const TicTacToe = () => {
 
   useEffect(() => {
     if (gameOver || draw) {
-      setIsDialogOpen(true); // Open the dialog when the game is over or it's a draw
+      setIsDialogOpen(true);
     } else {
-      setIsDialogOpen(false); // Close the dialog if the game is not over
+      setIsDialogOpen(false);
     }
   }, [gameOver, draw]);
 
