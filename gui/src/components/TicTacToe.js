@@ -89,12 +89,6 @@ const TicTacToe = () => {
       <Typography variant="h4" gutterBottom>
         Tic Tac Toe
       </Typography>
-      <Typography variant="h6" gutterBottom>
-        Game Over: {gameOver ? 'true' : 'false'}
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        Draw: {draw ? 'true' : 'false'}
-      </Typography>
 
       <div className="board">
         {board.map((row, rowIndex) => (
