@@ -35,7 +35,7 @@ public class TicTacToeBoardModel {
 
   public boolean makeMove(int row, int col, char playerSymbol) {
     if (row < 0 || row >= board.length || col < 0 || col >= board.length || board[row][col] != ' ') {
-      return false; // Invalid move
+      return false;
     }
     board[row][col] = playerSymbol;
     return true;
@@ -47,37 +47,38 @@ public class TicTacToeBoardModel {
 
   public char getWinner() {
     for (int i = 0; i < board.length; i++) {
-      if (checkHorizontalWin(i, 0, board[i][0])) {
-        return board[i][0];
+      for (int j = 0; j < board[i].length; j++) {
+        char playerSymbol = board[i][j];
+        if (playerSymbol != ' ' && checkingAllWinConditions(i, j, playerSymbol)) {
+          return playerSymbol;
+        }
       }
     }
-
-    for (int i = 0; i < board[0].length; i++) {
-      if (checkVerticalWin(0, i, board[0][i])) {
-        return board[0][i];
-      }
-    }
-
-    if (checkDiagonalWin(0, 0, board[0][0])) {
-      return board[0][0];
-    }
-
-    if (checkReverseDiagonalWin(0, board[0].length - 1, board[0][board[0].length - 1])) {
-      return board[0][board[0].length - 1];
-    }
-
     return ' ';
   }
 
-  public boolean isGameOver() {
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board[i].length; j++) {
-        if (isGameOver(i, j, board[i][j])) {
-          return true;
+  public boolean isWinning(char playerSymbol) {
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        if (board[i][j] == playerSymbol) {
+          if (checkingAllWinConditions(i, j, playerSymbol)) {
+            return true;
+          }
         }
       }
     }
     return false;
+  }
+
+  public boolean isGameOver() {
+    for (char[] chars : board) {
+      for (char aChar : chars) {
+        if (aChar == ' ') {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   public boolean isDraw() {
@@ -92,39 +93,36 @@ public class TicTacToeBoardModel {
   }
 
   private boolean checkReverseDiagonalWin(int row, int col, char playerSymbol) {
-    int count;
-    count = 1;
+    int count = 1;
     for (int i = row - 1, j = col + 1; i >= 0 && j < board[row].length && board[i][j] == playerSymbol; i--, j++) {
       count++;
     }
     for (int i = row + 1, j = col - 1; i < board.length && j >= 0 && board[i][j] == playerSymbol; i++, j--) {
       count++;
     }
-    return count >= 5;
+    return count >= 3;
   }
 
   private boolean checkDiagonalWin(int row, int col, char playerSymbol) {
-    int count;
-    count = 1;
+    int count = 1;
     for (int i = row - 1, j = col - 1; i >= 0 && j >= 0 && board[i][j] == playerSymbol; i--, j--) {
       count++;
     }
     for (int i = row + 1, j = col + 1; i < board.length && j < board[row].length && board[i][j] == playerSymbol; i++, j++) {
       count++;
     }
-    return count >= 5;
+    return count >= 3;
   }
 
   private boolean checkVerticalWin(int row, int col, char playerSymbol) {
-    int count;
-    count = 1;
+    int count = 1;
     for (int i = row - 1; i >= 0 && board[i][col] == playerSymbol; i--) {
       count++;
     }
     for (int i = row + 1; i < board.length && board[i][col] == playerSymbol; i++) {
       count++;
     }
-    return count >= 5;
+    return count >= 3;
   }
 
   private boolean checkHorizontalWin(int row, int col, char playerSymbol) {
@@ -135,7 +133,7 @@ public class TicTacToeBoardModel {
     for (int i = col + 1; i < board[row].length && board[row][i] == playerSymbol; i++) {
       count++;
     }
-    return count >= 5;
+    return count >= 3;
   }
 
   public boolean checkingAllWinConditions(int row, int col, char playerSymbol) {
@@ -143,33 +141,5 @@ public class TicTacToeBoardModel {
         checkVerticalWin(row, col, playerSymbol) ||
         checkDiagonalWin(row, col, playerSymbol) ||
         checkReverseDiagonalWin(row, col, playerSymbol);
-  }
-
-  public boolean isCenterOccupiedBy(char playerSymbol) {
-    return board[board.length / 2][board.length / 2] == playerSymbol;
-  }
-
-  public boolean isWinning(char playerSymbol) {
-    for (int i = 0; i < board.length; i++) {
-      if (checkHorizontalWin(i, 0, playerSymbol)) {
-        return true;
-      }
-    }
-
-    for (int i = 0; i < board[0].length; i++) {
-      if (checkVerticalWin(0, i, playerSymbol)) {
-        return true;
-      }
-    }
-
-    if (checkDiagonalWin(0, 0, playerSymbol)) {
-      return true;
-    }
-
-    if (checkReverseDiagonalWin(0, board[0].length - 1, playerSymbol)) {
-      return true;
-    }
-
-    return false;
   }
 }

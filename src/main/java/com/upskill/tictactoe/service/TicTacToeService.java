@@ -30,14 +30,15 @@ public class TicTacToeService {
     char currentPlayerSymbol = ticTacToeGameModel.getCurrentPlayerModel().getSymbol();
 
     if (ticTacToeGameModel.getBoard().makeMove(row, col, currentPlayerSymbol)) {
-      if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol)) {
-        ticTacToeGameModel.setGameOver(true);
-        gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
-      } else if (ticTacToeGameModel.getBoard().isDraw()) {
+      if (ticTacToeGameModel.getBoard().isDraw()) {
         ticTacToeGameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
+      }
+      if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol) ) {
+        ticTacToeGameModel.setGameOver(true);
+        gameSessionData.getAwaiter().notifyUpdated();
+        return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
       } else {
         ticTacToeGameModel.setCurrentPlayerModel(
             (currentPlayerSymbol == 'X') ? ticTacToeGameModel.getPlayerModelO() : ticTacToeGameModel.getPlayerModelX()
@@ -83,7 +84,7 @@ public class TicTacToeService {
     }
 
     TicTacToeBoardModel boardModel = gameModel.getBoard();
-    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O', 9);
+    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
 
     if (aiMove == null) {
       return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
@@ -93,14 +94,15 @@ public class TicTacToeService {
     int col = aiMove.getCol();
 
     if (boardModel.makeMove(row, col, 'O')) {
+      if (boardModel.isDraw()) {
+        gameModel.setDraw(true);
+        gameSessionData.getAwaiter().notifyUpdated();
+        return ResponseEntity.ok(new MessageModel("It's a draw!"));
+      }
       if (boardModel.isGameOver(row, col, 'O')) {
         gameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("O wins!"));
-      } else if (boardModel.isDraw()) {
-        gameModel.setDraw(true);
-        gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("It's a draw!"));
       } else {
         gameModel.setCurrentPlayerModel(gameModel.getPlayerModelX());
         gameSessionData.getAwaiter().notifyUpdated();

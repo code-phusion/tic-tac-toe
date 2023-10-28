@@ -15,6 +15,7 @@ const TicTacToe = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const [winner, setWinner] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // New state to control dialog visibility
 
   const { data: gameState, refetch } = useQuery(
     ['gameState', gameId],
@@ -37,26 +38,24 @@ const TicTacToe = () => {
     await gameApi.makeAIMove(gameId)
   );
 
-const handleCellClick = async (row, col) => {
-  if (!gameOver) {
-    const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
+  const handleCellClick = async (row, col) => {
+    if (!gameOver) {
+      const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
 
-    if (!gameState?.game?.againstAI || (currentPlayerSymbol === 'X')) {
-      await makeMove({ row, col });
+      if (!gameState?.game?.againstAI || (currentPlayerSymbol === 'X')) {
+        await makeMove({ row, col });
 
-      if (gameState?.game?.againstAI && (currentPlayerSymbol === 'X') && !gameOver) {
-        // Introduce a delay before the AI makes a move to avoid race condition. That's not ok.
-        // We will probably fix it with more elegant solution in the future.
-        setTimeout(async () => {
-          await makeAIMove();
-        }, 1000);
+        if (gameState?.game?.againstAI && (currentPlayerSymbol === 'X') && !gameOver) {
+          // Introduce a delay before the AI makes a move to avoid a race condition
+          setTimeout(async () => {
+            await makeAIMove();
+          }, 1000);
+        }
+      } else {
+        console.log("It's not your turn.");
       }
-    } else {
-      console.log("It's not your turn.");
     }
-  }
-};
-
+  };
 
   const renderCell = (rowIndex, colIndex, value) => {
     const buttonClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';
@@ -78,14 +77,12 @@ const handleCellClick = async (row, col) => {
   };
 
   useEffect(() => {
-    if (gameOver) {
-      if (gameState?.game?.gameOver) {
-        setWinner(`${gameState?.game?.currentPlayerModel?.symbol} wins!`);
-      } else if (draw) {
-        setWinner("It's a draw!");
-      }
+    if (gameOver || draw) {
+      setIsDialogOpen(true); // Open the dialog when the game is over or it's a draw
+    } else {
+      setIsDialogOpen(false); // Close the dialog if the game is not over
     }
-  }, [gameOver, gameState, draw]);
+  }, [gameOver, draw]);
 
   return (
     <div className="game">
@@ -114,13 +111,15 @@ const handleCellClick = async (row, col) => {
         Restart
       </Button>
 
-      <Dialog open={winner !== null} onClose={() => setWinner(null)}>
+      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
         <DialogTitle>Game Over</DialogTitle>
         <DialogContent>
-          <Typography>{winner}</Typography>
+          <Typography>
+            {gameOver ? `${gameState?.game?.currentPlayerModel?.symbol} wins!` : "It's a draw!"}
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setWinner(null)}>OK</Button>
+          <Button onClick={() => setIsDialogOpen(false)}>OK</Button>
         </DialogActions>
       </Dialog>
     </div>

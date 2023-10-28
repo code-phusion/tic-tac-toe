@@ -10,7 +10,7 @@ function StartScreen() {
   const startGame = async (againstAI) => {
     try {
       const fieldSize = parseInt(size, 10);
-      if (fieldSize < 5) {
+      if (fieldSize < 3) {
         alert("Please enter size of 5 or greater.");
         return;
       }
