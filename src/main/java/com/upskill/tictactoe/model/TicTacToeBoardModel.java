@@ -45,18 +45,6 @@ public class TicTacToeBoardModel {
     return checkingAllWinConditions(row, col, playerSymbol) || isDraw();
   }
 
-  public char getWinner() {
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board[i].length; j++) {
-        char playerSymbol = board[i][j];
-        if (playerSymbol != ' ' && checkingAllWinConditions(i, j, playerSymbol)) {
-          return playerSymbol;
-        }
-      }
-    }
-    return ' ';
-  }
-
   public boolean isWinning(char playerSymbol) {
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
