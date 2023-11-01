@@ -11,6 +11,11 @@ const gameApi = {
     return response?.data;
   },
 
+  clearBoard: async (gameId) => {
+    const response = await apiClient.post(`/game/${gameId}/clear-board`);
+    return response?.data;
+  },
+
   makeAIMove: async (gameId) => {
     const response = await apiClient.post(`/game/${gameId}/ai-move`);
     return response?.data;

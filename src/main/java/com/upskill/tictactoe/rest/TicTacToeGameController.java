@@ -41,8 +41,8 @@ public class TicTacToeGameController {
     return ticTacToeService.makeAIMove(gameId);
   }
 
-  @PostMapping("/{gameId}/restart")
-  public ResponseEntity<MessageModel> restartCurrentGame(@PathVariable String gameId) {
-    return ticTacToeService.restartCurrentGame(gameId);
+  @PostMapping("/{gameId}/clear-board")
+  public ResponseEntity<MessageModel> clearBoard(@PathVariable String gameId) {
+    return ticTacToeService.clearBoard(gameId);
   }
 }

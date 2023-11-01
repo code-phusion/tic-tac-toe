@@ -66,7 +66,7 @@ public class TicTacToeService {
     return ResponseEntity.ok(new GameStateResponse(ticTacToeGameModel, newStateId));
   }
 
-  public ResponseEntity<MessageModel> restartCurrentGame(final String gameId) {
+  public ResponseEntity<MessageModel> clearBoard(final String gameId) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
     final TicTacToeGameModel ticTacToeGameModel = gameSessionData.getGameModel();
     gameSessionService.updateGame(gameId, new TicTacToeGameModel(ticTacToeGameModel.getBoard().getBoard().length, ticTacToeGameModel.isAgainstAI()));

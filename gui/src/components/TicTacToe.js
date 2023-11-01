@@ -38,6 +38,10 @@ const TicTacToe = () => {
     await gameApi.makeAIMove(gameId)
   );
 
+  const { mutate: clearBoard } = useMutation(async () =>
+    await gameApi.clearBoard(gameId)
+  );
+
   const handleCellClick = async (row, col) => {
     if (!gameOver) {
       const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
@@ -76,6 +80,12 @@ const TicTacToe = () => {
     navigate('/');
   };
 
+  const handleClearBoard = () => {
+    clearBoard().then(() => {
+      refetch(); // Reload the game state after clearing the board
+    });
+  };
+
   useEffect(() => {
     if (gameOver || draw) {
       setIsDialogOpen(true);
@@ -85,39 +95,42 @@ const TicTacToe = () => {
   }, [gameOver, draw]);
 
   return (
-    <div className="game">
-      <Typography variant="h4" gutterBottom>
-        Tic Tac Toe
-      </Typography>
+      <div className="game">
+        <Typography variant="h4" gutterBottom>
+          Tic Tac Toe
+        </Typography>
 
-      <div className="board">
-        {board.map((row, rowIndex) => (
-          <div className="board-row" key={rowIndex}>
-            {row.split('').map((cell, colIndex) => (
-              <div className="cell-container" key={colIndex}>
-                {renderCell(rowIndex, colIndex, cell)}
-              </div>
-            ))}
-          </div>
-        ))}
+        <div className="board">
+          {board.map((row, rowIndex) => (
+            <div className="board-row" key={rowIndex}>
+              {row.split('').map((cell, colIndex) => (
+                <div className="cell-container" key={colIndex}>
+                  {renderCell(rowIndex, colIndex, cell)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <Button variant="contained" color="primary" onClick={handleRestart} style={{ margin: '10px' }}>
+          Back to the Main Page
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleClearBoard} style={{ margin: '10px' }}>
+          Clear Board
+        </Button>
+
+        <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+          <DialogTitle>Game Over</DialogTitle>
+          <DialogContent>
+            <Typography>
+              {gameOver ? `${gameState?.game?.currentPlayerModel?.symbol} wins!` : "It's a draw!"}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsDialogOpen(false)}>OK</Button>
+          </DialogActions>
+        </Dialog>
       </div>
-      <Button variant="contained" color="primary" onClick={handleRestart}>
-        Restart
-      </Button>
-
-      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-        <DialogTitle>Game Over</DialogTitle>
-        <DialogContent>
-          <Typography>
-            {gameOver ? `${gameState?.game?.currentPlayerModel?.symbol} wins!` : "It's a draw!"}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsDialogOpen(false)}>OK</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+    );
 };
 
 export default TicTacToe;
