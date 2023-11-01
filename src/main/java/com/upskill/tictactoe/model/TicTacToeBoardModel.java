@@ -58,17 +58,6 @@ public class TicTacToeBoardModel {
     return false;
   }
 
-  public boolean isGameOver() {
-    for (char[] chars : board) {
-      for (char aChar : chars) {
-        if (aChar == ' ') {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
   public boolean isDraw() {
     for (char[] chars : board) {
       for (char aChar : chars) {
