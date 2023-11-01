@@ -19,10 +19,7 @@ public class MiniMaxAI {
     for (int row = 0; row < board.getSize(); row++) {
       for (int col = 0; col < board.getSize(); col++) {
         if (board.isEmpty(row, col)) {
-          board.makeMove(row, col, aiSymbol);
-          int score = minimax(board, 0, false, aiSymbol, playerSymbol);
-          board.undoMove(row, col);
-
+          int score = makeMoveAndMinimaxAndReturnScore(board, row, col, aiSymbol, 0, false, aiSymbol, playerSymbol);
           if (score > bestScore) {
             bestScore = score;
             bestMove = new Move(row, col);
@@ -48,10 +45,8 @@ public class MiniMaxAI {
     for (int row = 0; row < board.getSize(); row++) {
       for (int col = 0; col < board.getSize(); col++) {
         if (board.isEmpty(row, col)) {
-          board.makeMove(row, col, isMaximizing ? aiSymbol : playerSymbol);
-          int score = minimax(board, depth + 1, !isMaximizing, aiSymbol, playerSymbol);
-          board.undoMove(row, col);
-
+          char symbolToUse = isMaximizing ? aiSymbol : playerSymbol;
+          int score = makeMoveAndMinimaxAndReturnScore(board, row, col, symbolToUse, depth + 1, !isMaximizing, aiSymbol, playerSymbol);
           if (isMaximizing) {
             bestScore = Math.max(bestScore, score);
           } else {
@@ -62,5 +57,13 @@ public class MiniMaxAI {
     }
 
     return bestScore;
+  }
+
+  private int makeMoveAndMinimaxAndReturnScore(TicTacToeBoardModel board, int row, int col, char symbol, int depth, boolean isMaximizing,
+                                               char aiSymbol, char playerSymbol) {
+    board.makeMove(row, col, symbol);
+    int score = minimax(board, depth, isMaximizing, aiSymbol, playerSymbol);
+    board.undoMove(row, col);
+    return score;
   }
 }

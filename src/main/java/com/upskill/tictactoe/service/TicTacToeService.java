@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class TicTacToeService {
   private final GameSessionService gameSessionService;
   private final MiniMaxAI miniMaxAI;
+  private final BoardSizeValidatorService boardSizeValidatorService;
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
@@ -35,7 +36,7 @@ public class TicTacToeService {
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
-      if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol) ) {
+      if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol)) {
         ticTacToeGameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
@@ -52,8 +53,9 @@ public class TicTacToeService {
   }
 
   public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI) {
-    if (againstAI && size != 3) {
-      return ResponseEntity.badRequest().body(new GameIdResponse("Sorry. AI for now only supports 3x3 board."));
+    final ResponseEntity<GameIdResponse> body = boardSizeValidatorService.boardSizeValidation(size, againstAI);
+    if (body != null) {
+      return body;
     }
     final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI));
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
