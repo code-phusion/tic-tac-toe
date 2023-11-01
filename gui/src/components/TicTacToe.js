@@ -14,9 +14,12 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 const TicTacToe = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [resultImage, setResultImage] = useState(null);
   const [resultText, setResultText] = useState(null);
+
+  const [cellNotEmptyError, setCellNotEmptyError] = useState(''); // New state variable
 
   const { data: gameState, refetch } = useQuery(
     ['gameState', gameId],
@@ -48,7 +51,13 @@ const TicTacToe = () => {
       const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
 
       if (!gameState?.game?.againstAI || currentPlayerSymbol === 'X') {
-        await makeMove({ row, col });
+        if (board[row][col] === ' ') {
+          setCellNotEmptyError('');
+          await makeMove({ row, col });
+        } else {
+          setCellNotEmptyError('Cell is not empty! Please move correctly.');
+          throw new Error('Cell is not empty.');
+        }
 
         if (gameState?.game?.againstAI && currentPlayerSymbol === 'X' && !gameOver) {
           setTimeout(async () => {
@@ -59,21 +68,6 @@ const TicTacToe = () => {
         console.log("It's not your turn.");
       }
     }
-  };
-
-  const renderCell = (rowIndex, colIndex, value) => {
-    const buttonClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';
-
-    return (
-      <Button
-        variant="outlined"
-        className={`cell ${buttonClass}`}
-        onClick={() => handleCellClick(rowIndex, colIndex)}
-        key={colIndex}
-      >
-        {value}
-      </Button>
-    );
   };
 
   const handleRestart = () => {
@@ -110,16 +104,34 @@ const TicTacToe = () => {
       }
     } else {
       setIsDialogOpen(false);
+      setCellNotEmptyError(''); // Reset the error message
       setResultImage(null);
       setResultText(null);
     }
   }, [gameOver, draw]);
+
+  const renderCell = (rowIndex, colIndex, value) => {
+    const buttonClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';
+
+    return (
+      <Button
+        variant="outlined"
+        className={`cell ${buttonClass}`}
+        onClick={() => handleCellClick(rowIndex, colIndex)}
+        key={colIndex}
+      >
+        {value}
+      </Button>
+    );
+  };
 
   return (
     <div className="game">
       <Typography variant="h4" gutterBottom>
         Tic Tac Toe
       </Typography>
+
+      {cellNotEmptyError && <div style={{ color: 'red' }}>{cellNotEmptyError}</div>}
 
       <div className="board">
         {board.map((row, rowIndex) => (
@@ -132,6 +144,7 @@ const TicTacToe = () => {
           </div>
         ))}
       </div>
+
       <Button variant="contained" color="primary" onClick={handleRestart} style={{ margin: '10px' }}>
         Back to the Main Page
       </Button>
