@@ -33,10 +33,10 @@
 }
 
 .o-button {
-  color:red !important;
+  color: #eee845 !important;
 }
 .x-button {
-  color:#1976d2 !important;
+  color: #7bbcff !important;
 }
 
 .cell:hover {

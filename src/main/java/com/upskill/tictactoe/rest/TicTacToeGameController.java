@@ -22,8 +22,8 @@ public class TicTacToeGameController {
   private final TicTacToeService ticTacToeService;
 
   @PostMapping("/new")
-  public ResponseEntity<GameIdResponse> startNewGame(@RequestParam int size) {
-    return ticTacToeService.startNewGame(size);
+  public ResponseEntity<GameIdResponse> startNewGame(@RequestParam int size, @RequestParam boolean againstAI) {
+    return ticTacToeService.startNewGame(size, againstAI);
   }
 
   @PostMapping("/{gameId}/move")
@@ -36,8 +36,13 @@ public class TicTacToeGameController {
     return ticTacToeService.getCurrentState(gameId, stateId);
   }
 
-  @PostMapping("/{gameId}/restart")
-  public ResponseEntity<MessageModel> restartCurrentGame(@PathVariable String gameId) {
-    return ticTacToeService.restartCurrentGame(gameId);
+  @PostMapping("/{gameId}/ai-move")
+  public ResponseEntity<MessageModel> makeAIMove(@PathVariable String gameId) {
+    return ticTacToeService.makeAIMove(gameId);
+  }
+
+  @PostMapping("/{gameId}/clear-board")
+  public ResponseEntity<MessageModel> clearBoard(@PathVariable String gameId) {
+    return ticTacToeService.clearBoard(gameId);
   }
 }

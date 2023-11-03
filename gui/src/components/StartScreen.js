@@ -1,17 +1,38 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Button, Container, TextField, Typography} from '@mui/material';
-import gameApi from "../api/api";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, Container, TextField, Typography } from '@mui/material';
+import gameApi from '../api/api';
 
 function StartScreen() {
   const [size, setSize] = useState('10');
   const navigate = useNavigate();
 
-  const startGame = async () => {
-    const resposne = await gameApi.newGame(size);
-    const gameId = resposne?.gameId;
-    navigate(`game/${gameId}`);
+  const startGame = async (againstAI) => {
+    try {
+      const fieldSize = parseInt(size, 10);
+        if (againstAI && fieldSize !== 3) {
+        alert("Sorry. AI for now only supports 3x3 board.");
+        return;
+      }
+      if (fieldSize < 3) {
+        alert("Please enter size of 3 or greater.");
+        return;
+      }
+
+      if (fieldSize > 50) {
+        alert("Please enter size of 50 or less.");
+        return;
+      }
+
+      const response = await gameApi.newGame(fieldSize, againstAI);
+      const gameId = response?.gameId;
+      navigate(`game/${gameId}`);
+    } catch (error) {
+      console.error('An error occurred while starting the game:', error);
+    }
   };
+
+  const buttonStyle = { margin: '10px' };
 
   return (
     <Container maxWidth="sm" style={{ textAlign: 'center', paddingTop: '100px' }}>
@@ -20,8 +41,6 @@ function StartScreen() {
       </Typography>
       <TextField
         type="number"
-        min={1}
-        max={100}
         variant="outlined"
         label="Enter Field Size"
         fullWidth
@@ -29,8 +48,21 @@ function StartScreen() {
         onChange={(e) => setSize(e.target.value)}
         style={{ marginBottom: '20px' }}
       />
-      <Button variant="contained" color="primary" onClick={startGame}>
-        Start
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => startGame(true)}
+        style={buttonStyle}
+      >
+        Start Against AI
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => startGame(false)}
+        style={buttonStyle}
+      >
+        Start Against Human
       </Button>
     </Container>
   );
