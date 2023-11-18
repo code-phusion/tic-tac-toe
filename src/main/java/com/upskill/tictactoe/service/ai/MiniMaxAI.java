@@ -1,5 +1,6 @@
-package com.upskill.tictactoe.service;
+package com.upskill.tictactoe.ai;
 
+import com.upskill.tictactoe.service.ai.AIInterface;
 import org.springframework.stereotype.Service;
 
 import com.upskill.tictactoe.model.Move;
@@ -10,7 +11,8 @@ import com.upskill.tictactoe.model.TicTacToeBoardModel;
 * For now only supports 3x3 boars. Will fix it in the future. Probably with other algo.
 * */
 @Service
-public class MiniMaxAI {
+public class MiniMaxAI implements AIInterface {
+  @Override
   public Move calculateMove(TicTacToeBoardModel board, char aiSymbol) {
     int bestScore = Integer.MIN_VALUE;
     Move bestMove = null;
@@ -65,5 +67,25 @@ public class MiniMaxAI {
     int score = minimax(board, depth, isMaximizing, aiSymbol, playerSymbol);
     board.undoMove(row, col);
     return score;
+  }
+
+  @Override
+  public int getMaxBoardSize() {
+    return 3;
+  }
+
+  @Override
+  public int getWinNumber() {
+    return 3;
+  }
+
+  @Override
+  public String getId() {
+    return "minimax";
+  }
+
+  @Override
+  public String getName() {
+    return "MiniMax (3x3 board max, 3 in row to win)";
   }
 }

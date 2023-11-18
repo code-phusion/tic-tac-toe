@@ -11,7 +11,6 @@ export default function AppContextProvider({ children }) {
 
   const [loading, setLoading] = useState(false);
 
-
   const appContext = {
     refreshTrigger, refresh,
     loading, setLoading,

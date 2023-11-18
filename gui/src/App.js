@@ -23,6 +23,7 @@ function App() {
           <Routes>
             <Route exact path="/" element={<StartScreen />} />
             <Route path="/game/:gameId" element={<TicTacToe />} />
+            <Route path="/game/:gameId/:aiId" element={<TicTacToe />} />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </Router>
