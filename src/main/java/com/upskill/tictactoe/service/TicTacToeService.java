@@ -1,16 +1,16 @@
 package com.upskill.tictactoe.service;
 
+import com.upskill.tictactoe.dto.GameIdResponse;
+import com.upskill.tictactoe.dto.GameStateResponse;
+import com.upskill.tictactoe.model.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.upskill.tictactoe.dto.GameIdResponse;
-import com.upskill.tictactoe.dto.GameStateResponse;
-import com.upskill.tictactoe.model.Move;
-import com.upskill.tictactoe.model.GameSessionData;
-import com.upskill.tictactoe.model.MessageModel;
-import com.upskill.tictactoe.model.TicTacToeBoardModel;
-import com.upskill.tictactoe.model.TicTacToeGameModel;
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +18,7 @@ public class TicTacToeService {
   private final GameSessionService gameSessionService;
   private final MiniMaxAI miniMaxAI;
   private final BoardSizeValidatorService boardSizeValidatorService;
+  private final String gameLogsFolder = "games-logs";
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
@@ -30,13 +31,17 @@ public class TicTacToeService {
 
     char currentPlayerSymbol = ticTacToeGameModel.getCurrentPlayerModel().getSymbol();
 
+    log(gameId, "move," + currentPlayerSymbol + "," + row + "," + col);
+
     if (ticTacToeGameModel.getBoard().makeMove(row, col, currentPlayerSymbol)) {
       if (ticTacToeGameModel.getBoard().isDraw()) {
+        log(gameId, "end,draw,,");
         ticTacToeGameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
       if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol)) {
+        log(gameId, "end,win," + currentPlayerSymbol + ",");
         ticTacToeGameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
@@ -52,12 +57,26 @@ public class TicTacToeService {
     }
   }
 
+  private void log(String gameId, String message) {
+    try {
+      FileOutputStream fos = new FileOutputStream(new File(gameLogsFolder + "/" + gameId + ".log"), true);
+      PrintWriter writer = new PrintWriter(fos);
+      writer.println(message);
+      writer.close();
+    }
+    // TODO: handle exception
+    catch (IOException e) {}
+  }
+
   public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI) {
     final ResponseEntity<GameIdResponse> body = boardSizeValidatorService.boardSizeValidation(size, againstAI);
     if (body != null) {
       return body;
     }
     final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI));
+
+    log(gameSessionId, "start," + size + ",,");
+
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
   }
 
@@ -98,13 +117,17 @@ public class TicTacToeService {
     int row = aiMove.getRow();
     int col = aiMove.getCol();
 
+    log(gameId, "move,O," + row + "," + col);
+
     if (boardModel.makeMove(row, col, 'O')) {
       if (boardModel.isDraw()) {
+        log(gameId, "end,draw,,");
         gameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
       if (boardModel.isGameOver(row, col, 'O')) {
+        log(gameId, "end,win,O,");
         gameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("O wins!"));
