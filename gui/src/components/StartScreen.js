@@ -72,7 +72,7 @@ function StartScreen() {
         variant="outlined"
         label="Enter Field Size"
         fullWidth
-        value={size}
+        value={size.toString()}
         onChange={(e) => setSize(Number(e.target.value))}
         style={{ marginBottom: '20px' }}
       />
@@ -81,7 +81,7 @@ function StartScreen() {
         variant="outlined"
         label="Enter Win Number (how many cells to fill in row to win)"
         fullWidth
-        value={winNumber}
+        value={winNumber.toString()}
         onChange={(e) => setWinNumber(Number(e.target.value))}
         style={{ marginBottom: '20px' }}
       />
