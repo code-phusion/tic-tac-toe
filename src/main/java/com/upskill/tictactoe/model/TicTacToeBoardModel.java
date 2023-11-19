@@ -5,16 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class TicTacToeBoardModel {
   private char[][] board;
   private int size;
   private int winNumber;
+  private Move lastMove;
 
   public TicTacToeBoardModel(int size, int winNumber) {
     this.size = size;
     this.winNumber = winNumber;
+    this.lastMove = Move.builder()
+            .row(-1)
+            .col(-1)
+            .build();
     board = new char[size][size];
     initializeBoard();
   }
@@ -40,6 +43,8 @@ public class TicTacToeBoardModel {
       return false;
     }
     board[row][col] = playerSymbol;
+    this.lastMove.setRow(row);
+    this.lastMove.setCol(col);
     return true;
   }
 
