@@ -6,15 +6,16 @@
 
 .board {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     margin: 1px auto;
 }
 
-.board-column {
+.board-row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
 }
 
 .cell-container {
