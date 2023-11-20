@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class TicTacToeService {
   private final MiniMaxAI miniMaxAI;
   private final BoardSizeValidatorService boardSizeValidatorService;
   private final String gamesLogsFolder = "games-logs";
-  private final HashMap<String, List<String>> gamesLogs = new HashMap<>();
+  private final Map<String, List<String>> gamesLogs = new HashMap<>();
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
