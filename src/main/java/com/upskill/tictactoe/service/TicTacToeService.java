@@ -20,7 +20,7 @@ public class TicTacToeService {
   private final MiniMaxAI miniMaxAI;
   private final BoardSizeValidatorService boardSizeValidatorService;
   private final String gamesLogsFolder = "games-logs";
-  private HashMap<String, List<String>> gamesLogs = new HashMap<>();
+  private final HashMap<String, List<String>> gamesLogs = new HashMap<>();
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
