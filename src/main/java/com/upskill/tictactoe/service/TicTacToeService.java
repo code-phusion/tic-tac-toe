@@ -7,18 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-
 @Service
 @RequiredArgsConstructor
 public class TicTacToeService {
   private final GameSessionService gameSessionService;
   private final MiniMaxAI miniMaxAI;
   private final BoardSizeValidatorService boardSizeValidatorService;
-  private final String gameLogsFolder = "games-logs";
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
@@ -31,17 +25,13 @@ public class TicTacToeService {
 
     char currentPlayerSymbol = ticTacToeGameModel.getCurrentPlayerModel().getSymbol();
 
-    log(gameId, "move," + currentPlayerSymbol + "," + row + "," + col);
-
     if (ticTacToeGameModel.getBoard().makeMove(row, col, currentPlayerSymbol)) {
       if (ticTacToeGameModel.getBoard().isDraw()) {
-        log(gameId, "end,draw,,");
         ticTacToeGameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
       if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol)) {
-        log(gameId, "end,win," + currentPlayerSymbol + ",");
         ticTacToeGameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
@@ -57,25 +47,12 @@ public class TicTacToeService {
     }
   }
 
-  private void log(String gameId, String message) {
-    try {
-      FileOutputStream fos = new FileOutputStream(new File(gameLogsFolder + "/" + gameId + ".log"), true);
-      PrintWriter writer = new PrintWriter(fos);
-      writer.println(message);
-      writer.close();
-    }
-    // TODO: handle exception
-    catch (IOException e) {}
-  }
-
   public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI) {
     final ResponseEntity<GameIdResponse> body = boardSizeValidatorService.boardSizeValidation(size, againstAI);
     if (body != null) {
       return body;
     }
     final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI));
-
-    log(gameSessionId, "start," + size + ",,");
 
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
   }
@@ -109,9 +86,6 @@ public class TicTacToeService {
 
     TicTacToeBoardModel boardModel = gameModel.getBoard();
 
-    // Record the start time before AI makes a move
-    long startTime = System.currentTimeMillis();
-
     Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
 
     if (aiMove == null) {
@@ -122,18 +96,13 @@ public class TicTacToeService {
     int col = aiMove.getCol();
 
     if (boardModel.makeMove(row, col, 'O')) {
-      // Calculate and log the time in seconds after the AI makes its move
-      logTime(startTime);
-
       if (boardModel.isDraw()) {
-        log(gameId, "end,draw,,");
         gameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
 
       if (boardModel.isGameOver(row, col, 'O')) {
-        log(gameId, "end,win,O,");
         gameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("O wins!"));
@@ -145,11 +114,5 @@ public class TicTacToeService {
     } else {
       return ResponseEntity.badRequest().body(new MessageModel("AI made an invalid move."));
     }
-  }
-
-  private void logTime(long startTime) {
-    long endTime = System.currentTimeMillis();
-    double seconds = (endTime - startTime) / 1000.0;
-    System.out.println("Last AI move completed" + ": " + seconds + " seconds");
   }
 }
