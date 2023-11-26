@@ -33,6 +33,7 @@ const TicTacToe = () => {
   const board = gameState?.game?.board?.board || [];
   const gameOver = gameState?.game?.gameOver || false;
   const draw = gameState?.game?.draw || false;
+  const againstAI = gameState?.game?.againstAI || false;
 
   const { mutate: makeMove } = useMutation(async (params) =>
     await gameApi.move(gameId, params.row, params.col)
@@ -50,7 +51,7 @@ const TicTacToe = () => {
     if (!gameOver) {
       const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
 
-      if (!gameState?.game?.againstAI || currentPlayerSymbol === 'X') {
+      if (!againstAI || currentPlayerSymbol === 'X') {
         if (board[row][col] === ' ') {
           setCellNotEmptyError('');
           await makeMove({ row, col });
@@ -59,7 +60,7 @@ const TicTacToe = () => {
           throw new Error('Cell is not empty.');
         }
 
-        if (gameState?.game?.againstAI && currentPlayerSymbol === 'X' && !gameOver) {
+        if (againstAI && currentPlayerSymbol === 'X' && !gameOver) {
           setTimeout(async () => {
             await makeAIMove();
           }, 1000);
@@ -75,7 +76,7 @@ const TicTacToe = () => {
   };
 
   const handleClearBoard = () => {
-    clearBoard().then(() => {
+    clearBoard()?.then(() => {
       refetch();
     });
   };
@@ -86,20 +87,21 @@ const TicTacToe = () => {
 
       if (gameOver) {
         const winnerSymbol = gameState?.game?.currentPlayerModel?.symbol;
-        if (gameState?.game?.againstAI) {
-        setResultImage(winnerSymbol === 'O' ? 'https://media.tenor.com/sPGJ7qsV2ukAAAAj/laughing-bender.gif'
-        : 'https://media.tenor.com/dSiQJughhlYAAAAC/fetal-position-futurama.gif');
-        setResultText(`${winnerSymbol} wins!`);
+        if (againstAI) {
+          setResultImage(winnerSymbol === 'O'
+            ? 'https://media.tenor.com/sPGJ7qsV2ukAAAAj/laughing-bender.gif'
+            : 'https://media.tenor.com/dSiQJughhlYAAAAC/fetal-position-futurama.gif');
+          setResultText(`${winnerSymbol} wins!`);
         } else {
-        setResultText(`${winnerSymbol} wins!`);
+          setResultText(`${winnerSymbol} wins!`);
         }
       } else {
-      if (gameState?.game?.againstAI) {
-        setResultImage('https://media.tenor.com/ihKmG2owX4AAAAAj/what-are-we-gonna-do-bender.gif');
-        setResultText("It's a draw!");
+        if (againstAI) {
+          setResultImage('https://media.tenor.com/ihKmG2owX4AAAAAj/what-are-we-gonna-do-bender.gif');
+          setResultText("It's a draw!");
         }
         else {
-        setResultText("It's a draw!");
+          setResultText("It's a draw!");
         }
       }
     } else {
