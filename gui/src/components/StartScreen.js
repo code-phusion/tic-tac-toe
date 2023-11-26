@@ -10,12 +10,12 @@ function StartScreen() {
   const startGame = async (againstAI) => {
     try {
       const fieldSize = parseInt(size, 10);
-        if (againstAI && fieldSize !== 3) {
-        alert("Sorry. AI for now only supports 3x3 board.");
+        if (againstAI && (size < 5 || size > 8)) {
+        alert("Board min size 5x5 and max size 8x8");
         return;
       }
-      if (fieldSize < 3) {
-        alert("Please enter size of 3 or greater.");
+      if (fieldSize < 5) {
+        alert("Please enter size of 5 or greater.");
         return;
       }
 

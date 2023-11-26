@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class TicTacToeBoardModel {
   private char[][] board;
   private int size;
+  private Move lastMove;
 
   public TicTacToeBoardModel(int size) {
     this.size = size;
@@ -38,6 +39,7 @@ public class TicTacToeBoardModel {
       return false;
     }
     board[row][col] = playerSymbol;
+    lastMove = new Move(row, col);
     return true;
   }
 
@@ -77,7 +79,7 @@ public class TicTacToeBoardModel {
     for (int i = row + 1, j = col - 1; i < board.length && j >= 0 && board[i][j] == playerSymbol; i++, j--) {
       count++;
     }
-    return count >= 3;
+    return count >= 5;
   }
 
   private boolean checkDiagonalWin(int row, int col, char playerSymbol) {
@@ -88,7 +90,7 @@ public class TicTacToeBoardModel {
     for (int i = row + 1, j = col + 1; i < board.length && j < board[row].length && board[i][j] == playerSymbol; i++, j++) {
       count++;
     }
-    return count >= 3;
+    return count >= 5;
   }
 
   private boolean checkVerticalWin(int row, int col, char playerSymbol) {
@@ -99,7 +101,7 @@ public class TicTacToeBoardModel {
     for (int i = row + 1; i < board.length && board[i][col] == playerSymbol; i++) {
       count++;
     }
-    return count >= 3;
+    return count >= 5;
   }
 
   private boolean checkHorizontalWin(int row, int col, char playerSymbol) {
@@ -110,7 +112,7 @@ public class TicTacToeBoardModel {
     for (int i = col + 1; i < board[row].length && board[row][i] == playerSymbol; i++) {
       count++;
     }
-    return count >= 3;
+    return count >= 5;
   }
 
   public boolean checkingAllWinConditions(int row, int col, char playerSymbol) {
