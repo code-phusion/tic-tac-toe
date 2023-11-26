@@ -15,10 +15,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TicTacToeAIService {
   private final GameSessionService gameSessionService;
+  private final GameLogService gameLogService;
+  private final char aiPlayerSymbol = 'O';
 
   private HashMap<String, AIInterface> aiHashMap = new HashMap<>(){{
     AIInterface minimax = new MiniMaxAI();
     put(minimax.getId(), minimax);
+    // Register new AI algorithms here
   }};
 
   public ResponseEntity<MessageModel> move(final String gameId) {
@@ -35,7 +38,7 @@ public class TicTacToeAIService {
     }
 
     TicTacToeBoardModel boardModel = gameModel.getBoard();
-    Move aiMove = ai.calculateMove(boardModel, 'O');
+    Move aiMove = ai.calculateMove(boardModel, aiPlayerSymbol);
 
     if (aiMove == null) {
       return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
@@ -44,16 +47,20 @@ public class TicTacToeAIService {
     int row = aiMove.getRow();
     int col = aiMove.getCol();
 
-    if (boardModel.makeMove(row, col, 'O')) {
+    gameLogService.log(gameId, "move," + aiPlayerSymbol + "," + row + "," + col);
+
+    if (boardModel.makeMove(row, col, aiPlayerSymbol)) {
       if (boardModel.isDraw()) {
+        gameLogService.log(gameId, "end,draw,,", true);
         gameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
-      if (boardModel.isGameOver(row, col, 'O')) {
+      if (boardModel.isGameOver(row, col, aiPlayerSymbol)) {
+        gameLogService.log(gameId, "end,win," + aiPlayerSymbol + ",", true);
         gameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("O wins!"));
+        return ResponseEntity.ok(new MessageModel(aiPlayerSymbol + " wins!"));
       } else {
         gameModel.setCurrentPlayerModel(gameModel.getPlayerModelX());
         gameSessionData.getAwaiter().notifyUpdated();

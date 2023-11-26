@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class TicTacToeService {
   private final GameSessionService gameSessionService;
   private final BoardSizeValidatorService boardSizeValidatorService;
+  private final GameLogService gameLogService;
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
@@ -26,13 +27,17 @@ public class TicTacToeService {
 
     char currentPlayerSymbol = ticTacToeGameModel.getCurrentPlayerModel().getSymbol();
 
+    gameLogService.log(gameId, "move," + currentPlayerSymbol + "," + row + "," + col);
+
     if (ticTacToeGameModel.getBoard().makeMove(row, col, currentPlayerSymbol)) {
       if (ticTacToeGameModel.getBoard().isDraw()) {
+        gameLogService.log(gameId, "end,draw,,", true);
         ticTacToeGameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
       if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol)) {
+        gameLogService.log(gameId, "end,win," + currentPlayerSymbol + ",", true);
         ticTacToeGameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
@@ -53,7 +58,11 @@ public class TicTacToeService {
     if (body != null) {
       return body;
     }
+
     final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI, winNumber, aiId));
+
+    gameLogService.log(gameSessionId, "start," + size + "," + winNumber + "," + (againstAI ? aiId : ""));
+
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
   }
 
@@ -67,6 +76,9 @@ public class TicTacToeService {
   public ResponseEntity<MessageModel> clearBoard(final String gameId) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
     final TicTacToeGameModel ticTacToeGameModel = gameSessionData.getGameModel();
+    gameLogService.log(gameId, "start," + gameSessionData.getGameModel().getBoard().getSize()
+            + "," + gameSessionData.getGameModel().getWinNumber()
+            + "," + (gameSessionData.getGameModel().isAgainstAI() ? gameSessionData.getGameModel().getAiId() : ""));
     gameSessionService.updateGame(gameId, new TicTacToeGameModel(
             ticTacToeGameModel.getBoard().getBoard().length,
             ticTacToeGameModel.isAgainstAI(),
