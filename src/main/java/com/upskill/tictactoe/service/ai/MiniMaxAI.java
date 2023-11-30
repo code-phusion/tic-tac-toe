@@ -1,6 +1,5 @@
-package com.upskill.tictactoe.ai;
+package com.upskill.tictactoe.service.ai;
 
-import com.upskill.tictactoe.service.ai.AIInterface;
 import org.springframework.stereotype.Service;
 
 import com.upskill.tictactoe.model.Move;
