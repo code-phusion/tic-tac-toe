@@ -2,7 +2,9 @@ package com.upskill.tictactoe.service;
 
 import com.upskill.tictactoe.dto.GameIdResponse;
 import com.upskill.tictactoe.dto.GameStateResponse;
-import com.upskill.tictactoe.model.*;
+import com.upskill.tictactoe.model.GameSessionData;
+import com.upskill.tictactoe.model.MessageModel;
+import com.upskill.tictactoe.model.TicTacToeGameModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,8 +13,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TicTacToeService {
   private final GameSessionService gameSessionService;
-  private final MiniMaxAI miniMaxAI;
   private final BoardSizeValidatorService boardSizeValidatorService;
+  private final GameLogService gameLogService;
 
   public ResponseEntity<MessageModel> move(final String gameId, final int row, final int col) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
@@ -25,13 +27,17 @@ public class TicTacToeService {
 
     char currentPlayerSymbol = ticTacToeGameModel.getCurrentPlayerModel().getSymbol();
 
+    gameLogService.log(gameId, "move," + currentPlayerSymbol + "," + row + "," + col);
+
     if (ticTacToeGameModel.getBoard().makeMove(row, col, currentPlayerSymbol)) {
       if (ticTacToeGameModel.getBoard().isDraw()) {
+        gameLogService.log(gameId, "end,draw,,", true);
         ticTacToeGameModel.setDraw(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel("It's a draw!"));
       }
       if (ticTacToeGameModel.getBoard().isGameOver(row, col, currentPlayerSymbol)) {
+        gameLogService.log(gameId, "end,win," + currentPlayerSymbol + ",", true);
         ticTacToeGameModel.setGameOver(true);
         gameSessionData.getAwaiter().notifyUpdated();
         return ResponseEntity.ok(new MessageModel(currentPlayerSymbol + " wins!"));
@@ -47,12 +53,15 @@ public class TicTacToeService {
     }
   }
 
-  public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI) {
+  public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI, int winNumber, String aiId) {
     final ResponseEntity<GameIdResponse> body = boardSizeValidatorService.boardSizeValidation(size, againstAI);
     if (body != null) {
       return body;
     }
-    final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI));
+
+    final String gameSessionId = gameSessionService.newGame(new TicTacToeGameModel(size, againstAI, winNumber, aiId));
+
+    gameLogService.log(gameSessionId, "start," + size + "," + winNumber + "," + (againstAI ? aiId : ""));
 
     return ResponseEntity.ok(new GameIdResponse(gameSessionId));
   }
@@ -67,52 +76,15 @@ public class TicTacToeService {
   public ResponseEntity<MessageModel> clearBoard(final String gameId) {
     final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
     final TicTacToeGameModel ticTacToeGameModel = gameSessionData.getGameModel();
-    gameSessionService.updateGame(gameId, new TicTacToeGameModel(ticTacToeGameModel.getBoard().getBoard().length, ticTacToeGameModel.isAgainstAI()));
+    gameLogService.log(gameId, "start," + gameSessionData.getGameModel().getBoard().getSize()
+            + "," + gameSessionData.getGameModel().getWinNumber()
+            + "," + (gameSessionData.getGameModel().isAgainstAI() ? gameSessionData.getGameModel().getAiId() : ""));
+    gameSessionService.updateGame(gameId, new TicTacToeGameModel(
+            ticTacToeGameModel.getBoard().getBoard().length,
+            ticTacToeGameModel.isAgainstAI(),
+            ticTacToeGameModel.getWinNumber(),
+            ticTacToeGameModel.getAiId()));
     gameSessionData.getAwaiter().notifyUpdated();
     return ResponseEntity.ok(new MessageModel("Game restarted."));
-  }
-
-  public ResponseEntity<MessageModel> makeAIMove(final String gameId) {
-    final GameSessionData gameSessionData = gameSessionService.getGame(gameId);
-    TicTacToeGameModel gameModel = gameSessionData.getGameModel();
-
-    if (gameModel.isGameOver()) {
-      return ResponseEntity.badRequest().body(new MessageModel("Game is already over."));
-    }
-
-    if (gameModel.isDraw()) {
-      return ResponseEntity.badRequest().body(new MessageModel("It's a draw!"));
-    }
-
-    TicTacToeBoardModel boardModel = gameModel.getBoard();
-
-    Move aiMove = miniMaxAI.calculateMove(boardModel, 'O');
-
-    if (aiMove == null) {
-      return ResponseEntity.badRequest().body(new MessageModel("AI couldn't find a valid move."));
-    }
-
-    int row = aiMove.getRow();
-    int col = aiMove.getCol();
-
-    if (boardModel.makeMove(row, col, 'O')) {
-      if (boardModel.isDraw()) {
-        gameModel.setDraw(true);
-        gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("It's a draw!"));
-      }
-
-      if (boardModel.isGameOver(row, col, 'O')) {
-        gameModel.setGameOver(true);
-        gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("O wins!"));
-      } else {
-        gameModel.setCurrentPlayerModel(gameModel.getPlayerModelX());
-        gameSessionData.getAwaiter().notifyUpdated();
-        return ResponseEntity.ok(new MessageModel("AI move successful."));
-      }
-    } else {
-      return ResponseEntity.badRequest().body(new MessageModel("AI made an invalid move."));
-    }
   }
 }

@@ -36,3 +36,5 @@ build/
 gui/build/
 gui/node/
 gui/node_modules/
+
+games-logs/*
