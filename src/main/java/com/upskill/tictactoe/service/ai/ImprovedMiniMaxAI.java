@@ -155,6 +155,29 @@ public class ImprovedMiniMaxAI implements AIInterface {
     if (aiCount + opponentCount == line.length - 1) {
       score /= 2;
     }
+
+    // Additional diagonals
+    int mainDiagonalCount = 0;
+    int reverseDiagonalCount = 0;
+
+    for (int i = 0; i < line.length; i++) {
+      if (line[i] == playerSymbol) {
+        mainDiagonalCount += (i == line.length - 1 - i) ? 2 : 1;
+        reverseDiagonalCount += (i == line.length - 1 - i) ? 2 : 1;
+      }
+    }
+
+    if (mainDiagonalCount == board.getSize() - 1 && reverseDiagonalCount == 0) {
+      return Integer.MAX_VALUE / 2;
+    }
+
+    if (reverseDiagonalCount == board.getSize() - 1 && mainDiagonalCount == 0) {
+      return Integer.MIN_VALUE / 2;
+    }
+
+    score += (int) Math.pow(10, mainDiagonalCount);
+    score += (int) Math.pow(10, reverseDiagonalCount);
+
     return score;
   }
 
