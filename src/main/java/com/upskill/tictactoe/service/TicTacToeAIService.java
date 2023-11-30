@@ -3,6 +3,7 @@ package com.upskill.tictactoe.service;
 import com.upskill.tictactoe.ai.MiniMaxAI;
 import com.upskill.tictactoe.model.*;
 import com.upskill.tictactoe.service.ai.AIInterface;
+import com.upskill.tictactoe.service.ai.ImprovedMiniMaxAI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,11 @@ public class TicTacToeAIService {
   private final GameLogService gameLogService;
   private final char aiPlayerSymbol = 'O';
 
-  private HashMap<String, AIInterface> aiHashMap = new HashMap<>(){{
+  private final HashMap<String, AIInterface> aiHashMap = new HashMap<>(){{
     AIInterface minimax = new MiniMaxAI();
+    AIInterface improvedMiniMax = new ImprovedMiniMaxAI();
     put(minimax.getId(), minimax);
+    put(improvedMiniMax.getId(), improvedMiniMax);
     // Register new AI algorithms here
   }};
 

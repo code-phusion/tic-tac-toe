@@ -54,7 +54,7 @@ public class TicTacToeService {
   }
 
   public ResponseEntity<GameIdResponse> startNewGame(int size, boolean againstAI, int winNumber, String aiId) {
-    final ResponseEntity<GameIdResponse> body = boardSizeValidatorService.boardSizeValidation(size, againstAI);
+    final ResponseEntity<GameIdResponse> body = boardSizeValidatorService.boardSizeValidation(size);
     if (body != null) {
       return body;
     }
