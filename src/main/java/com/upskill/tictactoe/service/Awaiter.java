@@ -1,25 +1,27 @@
 package com.upskill.tictactoe.service;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.SneakyThrows;
 
 public class Awaiter {
-  private final AtomicInteger state = new AtomicInteger(1);
-  private final BlockingQueue<Integer> awaiter = new ArrayBlockingQueue<>(1);
+  private final Object semaphore = new Object();
+  private int state = 1;
 
   public void notifyUpdated() {
-    awaiter.offer(state.incrementAndGet());
+    synchronized (semaphore) {
+      state++;
+      semaphore.notifyAll();
+    }
   }
 
   @SneakyThrows(InterruptedException.class)
   public int awaitUpdate(int lastState) {
-    if (state.get() <= lastState) {
-      awaiter.poll(10, TimeUnit.SECONDS);
+    synchronized (semaphore) {
+      if (state <= lastState) {
+        semaphore.wait(TimeUnit.SECONDS.toMillis(10));
+      }
+      return state;
     }
-    return state.get();
   }
 }
