@@ -31,6 +31,7 @@ const TicTacToe = () => {
   );
 
   const board = gameState?.game?.board?.board || [];
+  const lastMove = gameState?.game?.board?.lastMove || [];
   const gameOver = gameState?.game?.gameOver || false;
   const draw = gameState?.game?.draw || false;
   const againstAI = gameState?.game?.againstAI || false;
@@ -113,7 +114,11 @@ const TicTacToe = () => {
   }, [gameOver, draw]);
 
   const renderCell = (rowIndex, colIndex, value) => {
-    const buttonClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';
+    const iconClass = value === 'X' ? 'x-button' : value === 'O' ? 'o-button' : 'cell';
+    const lastMoveClass = lastMove ?
+      rowIndex === lastMove.row && colIndex === lastMove.col ? 'last-move' : ''
+      : '';
+    const buttonClass = iconClass + ' ' + lastMoveClass;
 
     return (
       <Button
