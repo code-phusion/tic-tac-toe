@@ -44,3 +44,7 @@
 .cell:hover {
     background-color: #f0f0f0;
 }
+
+.last-move {
+  background-color: #f3f3f3 !important;
+}
