@@ -1,8 +1,9 @@
 package com.upskill.tictactoe.service;
 
-import com.upskill.tictactoe.ai.MiniMaxAI;
 import com.upskill.tictactoe.model.*;
 import com.upskill.tictactoe.service.ai.AIInterface;
+import com.upskill.tictactoe.service.ai.ImprovedMiniMaxAI;
+import com.upskill.tictactoe.service.ai.MiniMaxAI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,15 @@ import java.util.List;
 public class TicTacToeAIService {
   private final GameSessionService gameSessionService;
   private final GameLogService gameLogService;
+
+  //TODO: Our algos for AI support playing for X and for O. Will fix in the future.
   private final char aiPlayerSymbol = 'O';
 
-  private HashMap<String, AIInterface> aiHashMap = new HashMap<>(){{
+  private final HashMap<String, AIInterface> aiHashMap = new HashMap<>(){{
     AIInterface minimax = new MiniMaxAI();
+    AIInterface improvedMiniMax = new ImprovedMiniMaxAI();
     put(minimax.getId(), minimax);
+    put(improvedMiniMax.getId(), improvedMiniMax);
     // Register new AI algorithms here
   }};
 
