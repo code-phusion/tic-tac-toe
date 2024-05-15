@@ -1,7 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Container, MenuItem, TextField, Typography } from '@mui/material';
-import gameApi from '../api/api';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  Container,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
+import gameApi from "../api/api";
+import NavBar from "./NavBar";
+import AiIcon from "./SVGs/AiIcon";
+import HumanIcon from "./SVGs/HumanIcon";
 
 function StartScreen() {
   const [size, setSize] = useState(10);
@@ -21,12 +30,20 @@ function StartScreen() {
     fetchData();
   }, []);
 
-  const startGame = async (againstAI) => {
+  const startGame = async againstAI => {
     try {
       const fieldSize = parseInt(size, 10);
       if (againstAI) {
-        if (fieldSize > selectedAiModel.maxBoardSize || winNumber !== selectedAiModel.winNumber) {
-          alert("Sorry, selected AI only supports a Field Size <= " + selectedAiModel.maxBoardSize + " and a Win Number = " + selectedAiModel.winNumber);
+        if (
+          fieldSize > selectedAiModel.maxBoardSize ||
+          winNumber !== selectedAiModel.winNumber
+        ) {
+          alert(
+            "Sorry, selected AI only supports a Field Size <= " +
+              selectedAiModel.maxBoardSize +
+              " and a Win Number = " +
+              selectedAiModel.winNumber
+          );
           return;
         }
       }
@@ -45,80 +62,86 @@ function StartScreen() {
         fieldSize,
         winNumber,
         againstAI,
-        aiId: selectedAiModel.id
+        aiId: selectedAiModel.id,
       });
 
       const gameId = response?.gameId;
-      navigate(`game/${gameId}`);
+      navigate(`/game/${gameId}`);
     } catch (error) {
-      console.error('An error occurred while starting the game: ', error);
+      console.error("An error occurred while starting the game: ", error);
     }
   };
 
-  const buttonStyle = { margin: '10px' };
-
   const aiListOptions = [];
-  aiList?.forEach((aiModel) => {
-    aiListOptions.push(<MenuItem key={aiModel?.id} value={aiModel?.id}>{aiModel?.name}</MenuItem>);
+  aiList?.forEach(aiModel => {
+    aiListOptions.push(
+      <MenuItem key={aiModel?.id} value={aiModel?.id}>
+        {aiModel?.name}
+      </MenuItem>
+    );
   });
 
   return (
-    <Container maxWidth="sm" style={{ textAlign: 'center', paddingTop: '100px' }}>
-      <Typography variant="h4" gutterBottom>
-        Start Game
-      </Typography>
-      <TextField
-        type="number"
-        variant="outlined"
-        label="Enter Field Size"
-        fullWidth
-        value={size.toString()}
-        onChange={(e) => setSize(Number(e.target.value))}
-        style={{ marginBottom: '20px' }}
-      />
-      <TextField
-        type="number"
-        variant="outlined"
-        label="Enter Win Number (how many cells to fill in row to win)"
-        fullWidth
-        value={winNumber.toString()}
-        onChange={(e) => setWinNumber(Number(e.target.value))}
-        style={{ marginBottom: '20px' }}
-      />
-      <TextField
-        select
-        variant="outlined"
-        label="Select AI algo"
-        fullWidth
-        style={{ marginBottom: '20px' }}
-        value={selectedAiModel.id}
-        defaultValue={selectedAiModel.id}
-        onChange={(e) => {
-          const aiModel = aiList.find((curAiModel) => {
-            return curAiModel.id === e.target.value;
-          });
-          setSelectedAiModel(aiModel);
-        }}
-      >
-        {aiListOptions}
-      </TextField>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => startGame(true)}
-        style={buttonStyle}
-      >
-        Start Against AI
-      </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => startGame(false)}
-        style={buttonStyle}
-      >
-        Start Against Human
-      </Button>
-    </Container>
+    <>
+      <NavBar />
+      <div className="form-container">
+        <div className="form">
+          <p className="form-header">Choose preferred settings</p>
+          <TextField
+            type="number"
+            variant="standard"
+            label="Enter Field Size"
+            fullWidth
+            value={size.toString()}
+            onChange={e => setSize(Number(e.target.value))}
+            style={{ marginBottom: "20px" }}
+            className="textField"
+            sx={{
+              fieldset: { borderColor: "red" },
+            }}
+          />
+          <TextField
+            type="number"
+            variant="standard"
+            label="Enter Win Number (how many cells to fill in row to win)"
+            fullWidth
+            value={winNumber.toString()}
+            onChange={e => setWinNumber(Number(e.target.value))}
+            style={{ marginBottom: "20px" }}
+            className="textField"
+          />
+          <TextField
+            select
+            variant="standard"
+            label="Select AI algo"
+            fullWidth
+            style={{ marginBottom: "40px" }}
+            value={selectedAiModel.id}
+            defaultValue={selectedAiModel.id}
+            onChange={e => {
+              const aiModel = aiList.find(curAiModel => {
+                return curAiModel.id === e.target.value;
+              });
+              setSelectedAiModel(aiModel);
+            }}
+            className="textField"
+          >
+            {aiListOptions}
+          </TextField>
+          <div className="btn-container">
+            <div onClick={() => startGame(true)} className="btn-form blue-btn">
+              <AiIcon /> Start Against AI
+            </div>
+            <div
+              onClick={() => startGame(false)}
+              className="btn-form yellow-btn"
+            >
+              <HumanIcon /> Start Against Human
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

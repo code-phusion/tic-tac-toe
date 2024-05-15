@@ -1,37 +1,219 @@
 /* App.css */
 
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Kanit", sans-serif;
+  background-color: #252835;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.text-des {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-text {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0.01em;
+}
+
+.blue-btn {
+  background-color: #5f77f4;
+}
+
+.yellow-btn {
+  background-color: #f4c16b;
+  color: #252835 !important;
+}
+
+.pink-btn {
+  background-color: #f355a1;
+}
+
+.navbar {
+  height: 88px;
+  padding: 0 156px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .nav-btn {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: 1px solid #f9f9fc;
+    color: #f9f9fc;
+    border-radius: 64px;
+  }
+}
+
+.hero-container {
+  padding: 0 156px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 88px);
+
+  .text-container {
+    color: #f9f9fc;
+    max-width: 665px;
+    .header {
+      font-size: 64px;
+      font-weight: 400;
+      line-height: 80px;
+      text-align: left;
+      margin-bottom: 16px;
+    }
+    .info {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 24px;
+      letter-spacing: 0.008em;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 24px;
+
+      &:last-child {
+        margin-top: 24px;
+      }
+
+      .hero-btn {
+        padding: 18px 24px;
+        text-decoration: none;
+        color: #ffffff;
+        display: flex;
+        gap: 12px;
+        border-radius: 64px;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+.form-container {
+  height: calc(100vh - 88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .form {
+    background-color: #fff;
+    max-width: 600px;
+    padding: 40px 56px;
+    border-radius: 8px;
+    .form-header {
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 36.4px;
+      text-align: left;
+      color: #252835;
+      margin-bottom: 16px;
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 24px;
+
+      .btn-form {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+        letter-spacing: 0.01em;
+        color: #ffffff;
+        border-radius: 64px;
+        padding: 12px 0;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.textField {
+  input,
+  li {
+    font-family: "Kanit", sans-serif !important;
+  }
+  & label.Mui-focused {
+    color: #868da4;
+  }
+  & .MuiOutlinedInput-root {
+    border-color: #868da4;
+
+    &.Mui-focused fieldset {
+      border-color: #868da4;
+    }
+  }
+
+  .MuiInput-input::after {
+    border-color: #868da4 !important;
+  }
+}
+
 .game {
-    text-align: center;
+  text-align: center;
+  height: calc(100vh - 88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .board {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin: 1px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 1px auto;
 }
 
 .board-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .cell-container {
-    margin: 1px;
+  margin: 1px;
 }
 
 .cell {
-    width: 40px;
-    height: 40px;
-    min-width: 40px !important;
-    font-size: 2rem !important;
-    border: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  width: 40px;
+  height: 40px;
+  min-width: 40px !important;
+  font-size: 2rem !important;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .o-button {
@@ -42,7 +224,7 @@
 }
 
 .cell:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .last-move {
