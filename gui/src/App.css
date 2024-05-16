@@ -262,6 +262,13 @@ body {
   background-size: cover;
 }
 
+.o-button-active {
+  background-image: url(/src/components/SVGs/CircleActiveIcon.svg);
+}
+
+.x-button-active {
+  background-image: url(/src/components/SVGs/CrossActiveIcon.svg);
+}
 .cell:hover {
   background-color: #f0f0f0;
 }

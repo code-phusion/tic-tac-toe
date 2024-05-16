@@ -132,14 +132,16 @@ const TicTacToe = () => {
   }, [gameOver, draw]);
 
   const renderCell = (rowIndex, colIndex, value) => {
-    console.log(value, "value");
     const iconClass =
       value === "X" ? "x-button" : value === "O" ? "o-button" : "cell";
-    const lastMoveClass = lastMove
-      ? rowIndex === lastMove.row && colIndex === lastMove.col
-        ? "last-move"
-        : ""
-      : "";
+
+    const lastMoveClass =
+      lastMove && rowIndex === lastMove.row && colIndex === lastMove.col
+        ? value === "O"
+          ? "o-button-active"
+          : "x-button-active"
+        : "";
+
     const buttonClass = iconClass + " " + lastMoveClass;
 
     return (
