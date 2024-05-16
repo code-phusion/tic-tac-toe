@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Container,
-  MenuItem,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { MenuItem, TextField, Typography } from "@mui/material";
 import gameApi from "../api/api";
 import NavBar from "./NavBar";
 import AiIcon from "./SVGs/AiIcon";
@@ -18,6 +12,8 @@ function StartScreen() {
   const [aiList, setAiList] = useState([]);
   const [selectedAiModel, setSelectedAiModel] = useState({ id: "" });
   const navigate = useNavigate();
+
+  const [warning, setWarning] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -38,25 +34,27 @@ function StartScreen() {
           fieldSize > selectedAiModel.maxBoardSize ||
           winNumber !== selectedAiModel.winNumber
         ) {
-          alert(
-            "Sorry, selected AI only supports a Field Size <= " +
-              selectedAiModel.maxBoardSize +
-              " and a Win Number = " +
-              selectedAiModel.winNumber
-          );
+          // setWarning(
+          //   "Sorry, Selected AI only supports a Field Size <= " +
+          //     selectedAiModel.maxBoardSize +
+          //     " and a Win Number = " +
+          //     selectedAiModel.winNumber
+          // );
           return;
         }
       }
 
-      if (fieldSize < 3 || fieldSize > 50) {
-        alert("Field Size should be between 3 and 50");
+      if (fieldSize < 3 || fieldSize > 10) {
+        // alert("Field Size should be between 3 and 10");
         return;
       }
 
       if (winNumber < 3 || winNumber > fieldSize) {
-        alert("Win Number should be between 3 and the Field Size");
+        // alert("Win Number should be between 3 and the Field Size");
         return;
       }
+
+      setWarning("");
 
       const response = await gameApi.newGame({
         fieldSize,
@@ -97,8 +95,21 @@ function StartScreen() {
             style={{ marginBottom: "20px" }}
             className="textField"
             sx={{
-              fieldset: { borderColor: "red" },
+              "input::-webkit-outer-spin-button, input::-webkit-inner-spin-button":
+                {
+                  WebkitAppearance: "none",
+                  margin: 0,
+                },
+              "input[type=number]": {
+                MozAppearance: "textfield",
+              },
             }}
+            error={size < 3 || size > 10}
+            helperText={
+              size < 3 || size > 10
+                ? "Field Size should be between 3 and 10"
+                : ""
+            }
           />
           <TextField
             type="number"
@@ -109,6 +120,22 @@ function StartScreen() {
             onChange={e => setWinNumber(Number(e.target.value))}
             style={{ marginBottom: "20px" }}
             className="textField"
+            sx={{
+              "input::-webkit-outer-spin-button, input::-webkit-inner-spin-button":
+                {
+                  WebkitAppearance: "none",
+                  margin: 0,
+                },
+              "input[type=number]": {
+                MozAppearance: "textfield",
+              },
+            }}
+            error={winNumber < 3 || winNumber > size}
+            helperText={
+              winNumber < 3 || winNumber > size
+                ? "Win Number should be between 3 and the Field Size"
+                : ""
+            }
           />
           <TextField
             select
@@ -128,6 +155,17 @@ function StartScreen() {
           >
             {aiListOptions}
           </TextField>
+          <Typography
+            variant="caption"
+            display="block"
+            color="error"
+            sx={{
+              textAlign: "center",
+              margin: "-12px 0 12px 0",
+            }}
+          >
+            {warning && warning}
+          </Typography>
           <div className="btn-container">
             <div onClick={() => startGame(true)} className="btn-form blue-btn">
               <AiIcon /> Start Against AI

@@ -6,11 +6,12 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
 } from "@mui/material";
 import gameApi from "../api/api";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import NavBar from "./NavBar";
+import BackIcon from "./SVGs/BackIcon";
+import ClearBoardIcon from "./SVGs/ClearBoardIcon";
 
 const TicTacToe = () => {
   const { gameId } = useParams();
@@ -48,30 +49,6 @@ const TicTacToe = () => {
   const { mutate: clearBoard } = useMutation(
     async () => await gameApi.clearBoard(gameId)
   );
-
-  // const handleCellClick = async (row, col) => {
-  //   if (!gameOver) {
-  //     const currentPlayerSymbol = gameState?.game?.currentPlayerModel?.symbol;
-
-  //     if (!againstAI || currentPlayerSymbol === 'X') {
-  //       if (board[row][col] === ' ') {
-  //         setCellNotEmptyError('');
-  //         await makeMove({ row, col });
-  //       } else {
-  //         setCellNotEmptyError('Cell is not empty! Please move correctly.');
-  //         throw new Error('Cell is not empty.');
-  //       }
-
-  //       if (againstAI && currentPlayerSymbol === 'X' && !gameOver) {
-  //         setTimeout(async () => {
-  //           await makeAIMove();
-  //         }, 1000);
-  //       }
-  //     } else {
-  //       console.log("It's not your turn.");
-  //     }
-  //   }
-  // };
 
   const handleCellClick = async (row, col) => {
     if (!gameOver) {
@@ -151,9 +128,11 @@ const TicTacToe = () => {
       setResultImage(null);
       setResultText(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameOver, draw]);
 
   const renderCell = (rowIndex, colIndex, value) => {
+    console.log(value, "value");
     const iconClass =
       value === "X" ? "x-button" : value === "O" ? "o-button" : "cell";
     const lastMoveClass = lastMove
@@ -166,11 +145,13 @@ const TicTacToe = () => {
     return (
       <Button
         variant="outlined"
-        className={`cell ${buttonClass}`}
+        className={`${
+          board?.length === 3 ? "normal-cell" : "flex-cell"
+        } cell ${buttonClass}`}
         onClick={() => handleCellClick(rowIndex, colIndex)}
         key={colIndex}
       >
-        {value}
+        {/* {value} */}
       </Button>
     );
   };
@@ -179,59 +160,75 @@ const TicTacToe = () => {
     <>
       <NavBar />
       <div className="game">
-        <Typography variant="h4" gutterBottom>
-          Tic Tac Toe
-        </Typography>
+        <div className="game-container">
+          {cellNotEmptyError && (
+            <div style={{ color: "red" }}>{cellNotEmptyError}</div>
+          )}
 
-        {cellNotEmptyError && (
-          <div style={{ color: "red" }}>{cellNotEmptyError}</div>
-        )}
-
-        <div className="board">
-          {board.map((row, rowIndex) => (
-            <div className="board-row" key={rowIndex}>
-              {row.split("").map((cell, colIndex) => (
-                <div className="cell-container" key={colIndex}>
-                  {renderCell(rowIndex, colIndex, cell)}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleRestart}
-          style={{ margin: "10px" }}
-        >
-          Back to the Main Page
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleClearBoard}
-          style={{ margin: "10px" }}
-        >
-          Clear Board
-        </Button>
-
-        <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-          <DialogTitle>Game Over</DialogTitle>
-          <DialogContent>
-            {resultImage ? (
-              <div>
-                <img src={resultImage} alt="Result" />
-                <Typography>{resultText}</Typography>
+          <div className="board">
+            {board.map((row, rowIndex) => (
+              <div className="board-row" key={rowIndex}>
+                {row.split("").map((cell, colIndex) => (
+                  <div
+                    className={board?.length > 3 && "cell-container"}
+                    key={colIndex}
+                  >
+                    {renderCell(rowIndex, colIndex, cell)}
+                  </div>
+                ))}
               </div>
-            ) : (
-              <Typography>{resultText}</Typography>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsDialogOpen(false)}>OK</Button>
-          </DialogActions>
-        </Dialog>
+            ))}
+          </div>
+
+          <div className="btn-container-board">
+            <div className="btn" onClick={handleRestart}>
+              <BackIcon className="hover-icon" /> Back to Menu
+            </div>
+
+            <div className="btn btn-pink" onClick={handleClearBoard}>
+              Clear Board <ClearBoardIcon className="hover-icon-pink" />
+            </div>
+          </div>
+
+          <Dialog open={isDialogOpen} className="customDialog">
+            <DialogTitle
+              sx={{
+                width: "462px",
+              }}
+              className="dialog-header"
+            >
+              Game Over
+            </DialogTitle>
+            <DialogContent>
+              {resultImage ? (
+                <div className="image-results">
+                  <img src={resultImage} alt="Result" />
+                  <Typography>{resultText}</Typography>
+                </div>
+              ) : (
+                <div className="image-results">
+                  <Typography variant="h5">{resultText}</Typography>
+                </div>
+              )}
+            </DialogContent>
+
+            <div className="btn-container-board modal-footer">
+              <div className="btn" onClick={handleRestart}>
+                <BackIcon className="hover-icon" /> Back to Menu
+              </div>
+
+              <div
+                className="btn btn-pink"
+                onClick={() => {
+                  handleClearBoard();
+                  setIsDialogOpen(false);
+                }}
+              >
+                Clear Board <ClearBoardIcon className="hover-icon-pink" />
+              </div>
+            </div>
+          </Dialog>
+        </div>
       </div>
     </>
   );

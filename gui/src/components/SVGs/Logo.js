@@ -6,6 +6,7 @@ const Logo = props => (
     height={36}
     fill="none"
     {...props}
+    style={{ cursor: "pointer" }}
   >
     <g clipPath="url(#abc)">
       <path

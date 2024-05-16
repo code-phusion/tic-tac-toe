@@ -31,7 +31,7 @@ function App() {
             <Route exact path="/" element={<HomeScreen />} />
             <Route path="StartScreen" element={<StartScreen />} />
             <Route path="/game/:gameId" element={<TicTacToe />} />
-            {/* <Route path="*" element={<Navigate replace to="/" />} /> */}
+            <Route path="*" element={<HomeScreen replace to="/" />} />
           </Routes>
         </Router>
       </QueryClientProvider>
