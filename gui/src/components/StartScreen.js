@@ -34,12 +34,12 @@ function StartScreen() {
           fieldSize > selectedAiModel.maxBoardSize ||
           winNumber !== selectedAiModel.winNumber
         ) {
-          // setWarning(
-          //   "Sorry, Selected AI only supports a Field Size <= " +
-          //     selectedAiModel.maxBoardSize +
-          //     " and a Win Number = " +
-          //     selectedAiModel.winNumber
-          // );
+          setWarning(
+            "Sorry, Selected AI only supports a Field Size <= " +
+              selectedAiModel.maxBoardSize +
+              " and a Win Number = " +
+              selectedAiModel.winNumber
+          );
           return;
         }
       }
