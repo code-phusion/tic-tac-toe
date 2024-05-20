@@ -7,7 +7,7 @@ import AiIcon from "./SVGs/AiIcon";
 import HumanIcon from "./SVGs/HumanIcon";
 
 function StartScreen() {
-  const [size, setSize] = useState(10);
+  const [size, setSize] = useState(3);
   const [winNumber, setWinNumber] = useState(3);
   const [aiList, setAiList] = useState([]);
   const [selectedAiModel, setSelectedAiModel] = useState({ id: "" });
