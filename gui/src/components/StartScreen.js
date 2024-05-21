@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MenuItem, TextField, Typography } from "@mui/material";
+import {
+  FormControl,
+  FormControlLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  TextField,
+  Typography,
+} from "@mui/material";
 import gameApi from "../api/api";
 import NavBar from "./NavBar";
 import AiIcon from "./SVGs/AiIcon";
 import HumanIcon from "./SVGs/HumanIcon";
+import DropDownIcon from "./SVGs/DropDownIcon";
 
 function StartScreen() {
   const [size, setSize] = useState(3);
@@ -12,6 +21,8 @@ function StartScreen() {
   const [aiList, setAiList] = useState([]);
   const [selectedAiModel, setSelectedAiModel] = useState({ id: "" });
   const navigate = useNavigate();
+
+  const [openDropDown, setOpenDropDown] = useState(false);
 
   const [warning, setWarning] = useState("");
 
@@ -137,24 +148,62 @@ function StartScreen() {
                 : ""
             }
           />
-          <TextField
-            select
-            variant="standard"
-            label="Select AI algo"
-            fullWidth
-            style={{ marginBottom: "40px" }}
-            value={selectedAiModel.id}
-            defaultValue={selectedAiModel.id}
-            onChange={e => {
-              const aiModel = aiList.find(curAiModel => {
-                return curAiModel.id === e.target.value;
-              });
-              setSelectedAiModel(aiModel);
-            }}
-            className="textField"
+          <div
+            onClick={() => setOpenDropDown(!openDropDown)}
+            className={`form-dropdown ${
+              openDropDown ? "margin-bottom-sm" : "margin-bottom"
+            }`}
           >
-            {aiListOptions}
-          </TextField>
+            Select AI algo{" "}
+            <DropDownIcon
+              className={`arrow-icon ${
+                openDropDown ? "arrow-icon-rotate" : ""
+              }`}
+            />
+          </div>
+          <div
+            style={{
+              animation: `${
+                openDropDown ? "slide-up" : "slide-down"
+              } 0.5s ease forwards`,
+              overflow: "hidden",
+            }}
+          >
+            <FormControl>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                name="radio-buttons-group"
+                value={selectedAiModel?.id || ""}
+                onChange={e => {
+                  const aiModel = aiList.find(curAiModel => {
+                    return curAiModel.id === e.target.value;
+                  });
+                  setSelectedAiModel(aiModel);
+                }}
+                className={`${openDropDown ? "margin-bottom" : ""}`}
+                sx={{
+                  gap: "8px",
+                  mt: 2,
+                  ".MuiButtonBase-root": {
+                    color: "#5F77F4",
+                  },
+                  ".Mui-checked ": {
+                    color: "#5F77F4 !important",
+                  },
+                }}
+              >
+                {aiListOptions?.map(data => (
+                  <FormControlLabel
+                    key={data?.key}
+                    value={data?.props?.value}
+                    control={<Radio />}
+                    label={data?.props?.children}
+                    className="radio-label"
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </div>
           <Typography
             variant="caption"
             display="block"

@@ -14,7 +14,8 @@ const NavBar = () => {
         rel="noopener noreferrer"
         className="text-des nav-btn"
       >
-        Visit Company Website <NewTab />
+        <span className="nav-btn-text">Visit Company Website</span>
+        <NewTab />
       </a>
     </div>
   );

@@ -29,7 +29,8 @@ const HomeScreen = () => {
               rel="noopener noreferrer"
               className="btn-text hero-btn yellow-btn"
             >
-              Visit Company Website <NewTab color={"#252835"} />
+              Visit Company Website{" "}
+              <NewTab className="btn-logo" color={"#252835"} />
             </a>
           </div>
           <div className="btn-container">
@@ -39,11 +40,11 @@ const HomeScreen = () => {
               rel="noopener noreferrer"
               className="btn-text hero-btn pink-btn"
             >
-              See Github Project <GithubIcon />
+              See Github Project <GithubIcon className="btn-logo" />
             </a>
           </div>
         </div>
-        <HeroIcon />
+        <HeroIcon className="hero-icon" />
       </div>
     </>
   );

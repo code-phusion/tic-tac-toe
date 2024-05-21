@@ -163,6 +163,15 @@ const TicTacToe = () => {
       <NavBar />
       <div className="game">
         <div className="game-container">
+          <div className="btn-container-board">
+            <div className="btn" onClick={handleRestart}>
+              <BackIcon className="hover-icon" /> Back to Menu
+            </div>
+
+            <div className="btn btn-pink" onClick={handleClearBoard}>
+              Clear Board <ClearBoardIcon className="hover-icon-pink" />
+            </div>
+          </div>
           {cellNotEmptyError && (
             <div style={{ color: "red" }}>{cellNotEmptyError}</div>
           )}
@@ -182,20 +191,10 @@ const TicTacToe = () => {
             ))}
           </div>
 
-          <div className="btn-container-board">
-            <div className="btn" onClick={handleRestart}>
-              <BackIcon className="hover-icon" /> Back to Menu
-            </div>
-
-            <div className="btn btn-pink" onClick={handleClearBoard}>
-              Clear Board <ClearBoardIcon className="hover-icon-pink" />
-            </div>
-          </div>
-
           <Dialog open={isDialogOpen} className="customDialog">
             <DialogTitle
               sx={{
-                width: "462px",
+                maxWidth: "462px",
               }}
               className="dialog-header"
             >
