@@ -379,6 +379,7 @@ body {
   border-radius: 16px;
   .MuiPaper-root {
     border-radius: 16px;
+    width: 550px !important;
   }
 }
 
@@ -403,6 +404,18 @@ body {
   p {
     font-size: 24px !important;
   }
+}
+
+.numberToWinMobile {
+  display: none !important;
+}
+
+.numberToWin {
+  display: block !important;
+}
+
+.textFieldInfo {
+  display: none;
 }
 
 @media only screen and (max-width: 850px) {
@@ -589,6 +602,29 @@ body {
   .btn-pink {
     display: flex;
     flex-direction: row-reverse;
+  }
+
+  .numberToWinMobile {
+    display: block !important;
+    position: relative !important;
+  }
+
+  .numberToWin {
+    display: none !important;
+  }
+
+  .textFieldInfo {
+    display: block;
+    position: absolute !important;
+    padding: 0 !important;
+    top: 14px;
+    right: 0;
+  }
+
+  .customDialog {
+    .MuiPaper-root {
+      width: 100% !important;
+    }
   }
 }
 

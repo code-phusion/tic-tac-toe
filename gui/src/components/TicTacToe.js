@@ -194,7 +194,7 @@ const TicTacToe = () => {
           <Dialog open={isDialogOpen} className="customDialog">
             <DialogTitle
               sx={{
-                maxWidth: "462px",
+                maxWidth: "550px",
               }}
               className="dialog-header"
             >

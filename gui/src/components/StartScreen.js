@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Button,
   FormControl,
   FormControlLabel,
   MenuItem,
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import gameApi from "../api/api";
@@ -14,6 +16,7 @@ import NavBar from "./NavBar";
 import AiIcon from "./SVGs/AiIcon";
 import HumanIcon from "./SVGs/HumanIcon";
 import DropDownIcon from "./SVGs/DropDownIcon";
+import TextFieldInfo from "./SVGs/TextFieldInfo";
 
 function StartScreen() {
   const [size, setSize] = useState(3);
@@ -130,7 +133,7 @@ function StartScreen() {
             value={winNumber.toString()}
             onChange={e => setWinNumber(Number(e.target.value))}
             style={{ marginBottom: "20px" }}
-            className="textField"
+            className="textField numberToWin"
             sx={{
               "input::-webkit-outer-spin-button, input::-webkit-inner-spin-button":
                 {
@@ -148,6 +151,65 @@ function StartScreen() {
                 : ""
             }
           />
+          <div className="numberToWinMobile">
+            <TextField
+              type="number"
+              variant="standard"
+              label="Enter Win Number"
+              fullWidth
+              value={winNumber.toString()}
+              onChange={e => setWinNumber(Number(e.target.value))}
+              style={{ marginBottom: "20px" }}
+              className="textField "
+              sx={{
+                "input::-webkit-outer-spin-button, input::-webkit-inner-spin-button":
+                  {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
+                "input[type=number]": {
+                  MozAppearance: "textfield",
+                },
+              }}
+              error={winNumber < 3 || winNumber > size}
+              helperText={
+                winNumber < 3 || winNumber > size
+                  ? "Win Number should be between 3 and the Field Size"
+                  : ""
+              }
+            />
+            <Tooltip
+              disableFocusListener
+              title="how many cells to fill in a row to win"
+              arrow
+              enterTouchDelay={0}
+              componentsProps={{
+                tooltip: {
+                  sx: {
+                    bgcolor: "#252835D9",
+                    borderRadius: "4px",
+                    color: "#F9F9FC",
+                    py: 1,
+                    px: 2,
+                    fontFamily: "Kanit",
+                    fontSize: "12px",
+                    lineHeight: "16px",
+                    maxWidth: "100%",
+                    fontWeight: "400",
+                  },
+                },
+                arrow: {
+                  "&::before": {
+                    backgroundColor: "F9F9FC",
+                  },
+                },
+              }}
+            >
+              <Button className="textFieldInfo">
+                <TextFieldInfo onClick={() => console.log("ehher")} />
+              </Button>
+            </Tooltip>
+          </div>
           <div
             onClick={() => setOpenDropDown(!openDropDown)}
             className={`form-dropdown ${
