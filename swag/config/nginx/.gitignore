@@ -1,0 +1,6 @@
+resolver.conf
+worker_processes.conf
+*.sample
+authelia*
+authentik*
+ldap*

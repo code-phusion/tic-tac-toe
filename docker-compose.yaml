@@ -1,0 +1,38 @@
+version: '3.8'
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+
+  main-service-app:
+    build:
+      context: ./aws-app
+    container_name: spring-app
+    ports:
+      - "5000:9090"
+    networks:
+      - app-network
+    depends_on:
+      - swag
+
+  swag:
+    container_name: swag
+    restart: unless-stopped
+    build:
+      context: ./swag
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Etc/UTC
+      URL: tic-tac-toe.codephusion.com
+      VALIDATION: http
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./swag/config/nginx:/config/nginx
+      - /efs:/config/etc
+    networks:
+      - app-network

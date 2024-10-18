@@ -34,13 +34,13 @@ public class GameLogService {
     }
   }
 
-  @SneakyThrows(IOException.class)
+//  @SneakyThrows(IOException.class)
   private void saveLogs(String gameId) {
     List<String> logs = gamesLogs.get(gameId);
     if (logs != null) {
-      PrintWriter writer = new PrintWriter(gamesLogsFolder + "/" + gameId + ".log");
-      logs.forEach(logLine -> writer.println(logLine));
-      writer.close();
+//      PrintWriter writer = new PrintWriter(gamesLogsFolder + "/" + gameId + ".log");
+//      logs.forEach(logLine -> writer.println(logLine));
+//      writer.close();
       gamesLogs.remove(gameId);
     }
   }
