@@ -73,4 +73,4 @@ jobs:
           wait_for_deployment: false
 
       - name: Notify deployment success
-        run: echo "Deployment to AWS Elastic Beanstalk successful!"
+        run: echo "Deployment to AWS Elastic Beanstalk triggered!"
