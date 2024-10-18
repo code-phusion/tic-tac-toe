@@ -37,7 +37,7 @@ jobs:
           cp target/*.jar aws-app/app.jar 
 
       - name: Zip artifact for deployment
-        run: zip -r deploy.zip . -i "aws-app/*" "swag/*" "docker-compose.yaml" "target"
+        run: zip -r deploy.zip . -i "aws-app/*" "swag/*" ".ebextensions/*" "docker-compose.yaml"
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v3
