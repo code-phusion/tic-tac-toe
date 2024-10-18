@@ -5,7 +5,7 @@ FROM --platform=linux/x86_64 amazoncorretto:17-alpine
 WORKDIR /app
 
 # Copy the Maven/Gradle built JAR file into the container (adjust path if needed)
-COPY tic-tac-toe.jar /app/app.jar
+COPY app.jar /app/app.jar
 
 EXPOSE 9090
 

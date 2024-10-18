@@ -34,7 +34,7 @@ jobs:
 
       - name: Copy JAR to aws-app directory
         run: |
-          cp target/*.jar aws-app/  
+          cp target/*.jar aws-app/app.jar 
 
       - name: Zip artifact for deployment
         run: zip -r deploy.zip . -i "aws-app/*" "swag/*" "docker-compose.yaml" "target"
