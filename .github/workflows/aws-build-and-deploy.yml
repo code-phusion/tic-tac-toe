@@ -1,4 +1,4 @@
-name: Build and deploy Python app to AWS
+name: Build and deploy app to AWS
 
 on:
   push:
