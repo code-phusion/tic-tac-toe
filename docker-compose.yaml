@@ -11,8 +11,6 @@ services:
       context: ./aws-app
     restart: unless-stopped
     container_name: main-service-app
-    ports:
-      - "5000:9090"
     networks:
       - app-network
     depends_on:
