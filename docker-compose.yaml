@@ -9,7 +9,7 @@ services:
   main-service-app:
     build:
       context: ./aws-app
-    container_name: spring-app
+    container_name: main-service-app
     ports:
       - "5000:9090"
     networks:
